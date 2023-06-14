@@ -1,5 +1,6 @@
 package com.luizalabs.wishlist.services;
 
+import com.luizalabs.wishlist.exceptions.BadRequestException;
 import com.luizalabs.wishlist.models.Product;
 import com.luizalabs.wishlist.models.Wishlist;
 import com.luizalabs.wishlist.repositories.WishlistRepository;
@@ -22,7 +23,7 @@ public class WishlistService {
         boolean wasProductAdded = wishlist.addProduct(product);
 
         if (!wasProductAdded) {
-            throw new RuntimeException("Wishlist is full");
+            throw BadRequestException.wishlistLimitReached();
         }
 
         wishlistRepository.save(wishlist);
