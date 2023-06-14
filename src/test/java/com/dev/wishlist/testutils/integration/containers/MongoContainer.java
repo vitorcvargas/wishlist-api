@@ -1,4 +1,4 @@
-package com.dev.wishlist.integration.containers;
+package com.dev.wishlist.testutils.integration.containers;
 
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
