@@ -12,11 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+import static com.dev.wishlist.testutils.ProductCreator.createProductListWithMaxCapacity;
+import static com.dev.wishlist.testutils.ProductCreator.createSingleProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,7 +50,7 @@ public class WishlistServiceTest {
     void shouldThrowExceptionWhenWishlistIsFull() {
 
         final Long userId = 1L;
-        Product product = new Product(1L, "Fridge", "Top notch", new BigDecimal("3.999"), "https:somelink");
+        Product product = createSingleProduct();
         List<Product> products = createProductListWithMaxCapacity();
 
         when(wishlistRepository.findByUserId(1L))
@@ -61,13 +61,4 @@ public class WishlistServiceTest {
         verify(wishlistRepository, times(1)).findByUserId(userId);
     }
 
-    private List<Product> createProductListWithMaxCapacity() {
-        List<Product> products = new ArrayList<>();
-
-        for (int i = 0; i < MAX_WISHLIST_SIZE; i++) {
-            products.add(new Product(1L, "Fridge", "Top notch", new BigDecimal("3.999"), "https:somelink"));
-        }
-
-        return products;
-    }
 }

@@ -13,4 +13,7 @@ public class MongoContainer {
     public static MongoDBContainer getInstance() {
         return container;
     }
+
+    private MongoContainer() {
+    }
 }
