@@ -1,10 +1,9 @@
 package com.dev.wishlist.services;
 
-import com.dev.wishlist.controllers.WishlistController;
-import com.dev.wishlist.repositories.WishlistRepository;
 import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.models.Wishlist;
+import com.dev.wishlist.repositories.WishlistRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
