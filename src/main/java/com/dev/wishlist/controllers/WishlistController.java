@@ -20,8 +20,8 @@ public class WishlistController {
         this.wishlistService = wishlistService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> addToWishlist(@RequestParam final Long userId, @RequestBody final Product product) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<String> addToWishlist(@PathVariable final Long userId, @RequestBody final Product product) {
 
         wishlistService.addToWishlist(product, userId);
 
