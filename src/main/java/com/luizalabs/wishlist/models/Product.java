@@ -49,4 +49,22 @@ public class Product {
     public void setS3ImageLink(String s3ImageLink) {
         this.s3ImageLink = s3ImageLink;
     }
+
+    public Product() {
+    }
+
+    public Product(String name, String description, BigDecimal amount, String s3ImageLink) {
+        this.name = name;
+        this.description = description;
+        this.amount = amount;
+        this.s3ImageLink = s3ImageLink;
+    }
+
+    public Product(Long id, String name, String description, BigDecimal amount, String s3ImageLink) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.amount = amount;
+        this.s3ImageLink = s3ImageLink;
+    }
 }

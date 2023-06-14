@@ -3,6 +3,11 @@ package com.luizalabs.wishlist.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.luizalabs.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+
 @Document
 public class Wishlist {
 
@@ -11,7 +16,14 @@ public class Wishlist {
 
     private Long userId;
 
-    private Product[] products = new Product[20];
+    private List<Product> products = new ArrayList<>();
+
+    public boolean addProduct(final Product product) {
+        if (this.products.size() == MAX_WISHLIST_SIZE)
+            return false;
+
+        return products.add(product);
+    }
 
     public String getId() {
         return id;
@@ -29,11 +41,19 @@ public class Wishlist {
         this.userId = userId;
     }
 
-    public Product[] getProducts() {
+    public List<Product> getProducts() {
         return products;
     }
 
-    public void setProducts(Product[] products) {
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public Wishlist() {
+    }
+
+    public Wishlist(Long userId, List<Product> products) {
+        this.userId = userId;
         this.products = products;
     }
 }
