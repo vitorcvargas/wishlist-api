@@ -1,6 +1,6 @@
-package com.dev.wishlist.integration;
+package com.dev.wishlist.testutils.integration;
 
-import com.dev.wishlist.integration.containers.MongoContainer;
+import com.dev.wishlist.testutils.integration.containers.MongoContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
