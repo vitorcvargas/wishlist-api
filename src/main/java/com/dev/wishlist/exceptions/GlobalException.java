@@ -1,4 +1,4 @@
-package com.luizalabs.wishlist.exceptions;
+package com.dev.wishlist.exceptions;
 
 public class GlobalException extends RuntimeException {
 

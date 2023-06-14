@@ -1,4 +1,4 @@
-package com.luizalabs.wishlist.utils;
+package com.dev.wishlist.utils;
 
 public class APIConstants {
 

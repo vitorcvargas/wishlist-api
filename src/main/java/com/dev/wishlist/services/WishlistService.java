@@ -1,9 +1,9 @@
-package com.luizalabs.wishlist.services;
+package com.dev.wishlist.services;
 
-import com.luizalabs.wishlist.exceptions.BadRequestException;
-import com.luizalabs.wishlist.models.Product;
-import com.luizalabs.wishlist.models.Wishlist;
-import com.luizalabs.wishlist.repositories.WishlistRepository;
+import com.dev.wishlist.repositories.WishlistRepository;
+import com.dev.wishlist.exceptions.BadRequestException;
+import com.dev.wishlist.models.Product;
+import com.dev.wishlist.models.Wishlist;
 import org.springframework.stereotype.Service;
 
 @Service

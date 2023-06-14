@@ -1,4 +1,4 @@
-package com.luizalabs.wishlist.models;
+package com.dev.wishlist.models;
 
 import java.math.BigDecimal;
 

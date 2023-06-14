@@ -1,6 +1,6 @@
-package com.luizalabs.wishlist.exceptions;
+package com.dev.wishlist.exceptions;
 
-import com.luizalabs.wishlist.mappers.ExceptionResponseMapper;
+import com.dev.wishlist.mappers.ExceptionResponseMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
 public class ControllerAdvisor {

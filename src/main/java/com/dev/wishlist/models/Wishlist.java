@@ -1,4 +1,4 @@
-package com.luizalabs.wishlist.models;
+package com.dev.wishlist.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.luizalabs.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
 
 @Document
 public class Wishlist {

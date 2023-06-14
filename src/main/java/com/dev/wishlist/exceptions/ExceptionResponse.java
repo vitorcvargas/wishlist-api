@@ -1,14 +1,11 @@
-package com.luizalabs.wishlist.exceptions;
+package com.dev.wishlist.exceptions;
 
-public enum ExceptionMessage {
-
-    WISHLIST_LIMIT_REACHED(1, "It was not possible to add the selected product to the wishlist as it is already full.");
-
+public class ExceptionResponse {
 
     private int code;
     private String message;
 
-    ExceptionMessage(final int code, final String message) {
+    public ExceptionResponse(final int code, final String message) {
         this.code = code;
         this.message = message;
     }
@@ -27,5 +24,13 @@ public enum ExceptionMessage {
 
     public void setMessage(final String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "ExceptionResponse{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                '}';
     }
 }
