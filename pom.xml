@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.luizalabs</groupId>
-	<artifactId>wishlist</artifactId>
+	<artifactId>wishlist-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>wishlist</name>
+	<name>wishlist-api</name>
 	<description>Wishlist API</description>
 	<properties>
 		<java.version>17</java.version>
