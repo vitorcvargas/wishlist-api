@@ -1,14 +1,18 @@
 package com.dev.wishlist.services;
 
+import com.dev.wishlist.controllers.WishlistController;
 import com.dev.wishlist.repositories.WishlistRepository;
 import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.models.Wishlist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WishlistService {
 
+    private final Logger logger = LoggerFactory.getLogger(WishlistService.class);
     private final WishlistRepository wishlistRepository;
 
     public WishlistService(WishlistRepository wishlistRepository) {
