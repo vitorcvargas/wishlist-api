@@ -4,3 +4,6 @@ spring:
       uri: ${FINANCIAL_ALERT_DB_URI}
       authentication-database: ${AUTHENTICATION_DATABASE}
       database: ${DATABASE}
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
