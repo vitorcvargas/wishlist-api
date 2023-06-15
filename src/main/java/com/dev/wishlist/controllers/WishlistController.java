@@ -24,7 +24,7 @@ public class WishlistController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<String> addToWishlist(@PathVariable final Long userId, @RequestBody final Product product) {
+    public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @RequestBody final Product product) {
         final String params = format("userId: %s, product: %s", userId, product);
         logger.info(REQUEST_RECEIVED, "addToWishlist", POST, params);
 
