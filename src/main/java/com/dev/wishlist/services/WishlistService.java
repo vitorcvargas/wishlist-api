@@ -15,9 +15,11 @@ public class WishlistService {
 
     private final Logger logger = LoggerFactory.getLogger(WishlistService.class);
     private final WishlistRepository wishlistRepository;
+    private final WishlistNotifier notifier;
 
-    public WishlistService(WishlistRepository wishlistRepository) {
+    public WishlistService(WishlistRepository wishlistRepository, WishlistNotifier notifier) {
         this.wishlistRepository = wishlistRepository;
+        this.notifier = notifier;
     }
 
     public void addToWishlist(final Product product, final Long userId) {
@@ -25,15 +27,16 @@ public class WishlistService {
         final Wishlist wishlist = wishlistRepository.findByUserId(userId).orElse(new Wishlist());
         int wishlistSize = wishlist.getProducts().size();
 
-        if(wishlistSize == MAX_WISHLIST_SIZE)
+        if (wishlistSize == MAX_WISHLIST_SIZE)
             throw BadRequestException.wishlistLimitReached();
 
-        if(wishlist.getProducts().contains(product))
+        if (wishlist.getProducts().contains(product))
             throw BadRequestException.productAlreadyAddedToWishlist();
 
         wishlist.setUserId(userId);
         wishlist.addProduct(product);
 
         wishlistRepository.save(wishlist);
+        notifier.notify(userId, product.getId());
     }
 }
