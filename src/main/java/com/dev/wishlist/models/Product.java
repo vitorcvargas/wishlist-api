@@ -4,23 +4,23 @@ import java.util.Objects;
 
 public class Product {
 
-    private Long id;
+    private Long productId;
     private String name;
 
     public Product() {
     }
 
-    public Product(Long id, String name) {
-        this.id = id;
+    public Product(Long productId, String name) {
+        this.productId = productId;
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -34,7 +34,7 @@ public class Product {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + id +
+                "productId=" + productId +
                 ", name='" + name + '\'' +
                 '}';
     }
@@ -44,11 +44,11 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name);
+        return Objects.equals(productId, product.productId) && Objects.equals(name, product.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(productId, name);
     }
 }
