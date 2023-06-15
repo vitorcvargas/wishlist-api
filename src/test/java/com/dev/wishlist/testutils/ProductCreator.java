@@ -11,7 +11,7 @@ import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
 public class ProductCreator {
 
     public static Product createSingleProduct() {
-        return new Product(1L, "Fridge", "Top notch", new BigDecimal("3.999"), "https:somelink");
+        return new Product(1L, "Nike revolution");
     }
 
     public static List<Product> createProductListWithMaxCapacity() {

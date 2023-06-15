@@ -1,14 +1,19 @@
 package com.dev.wishlist.models;
 
-import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Product {
 
     private Long id;
     private String name;
-    private String description;
-    private BigDecimal amount;
-    private String s3ImageLink;
+
+    public Product() {
+    }
+
+    public Product(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -26,45 +31,24 @@ public class Product {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name);
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getS3ImageLink() {
-        return s3ImageLink;
-    }
-
-    public void setS3ImageLink(String s3ImageLink) {
-        this.s3ImageLink = s3ImageLink;
-    }
-
-    public Product() {
-    }
-
-    public Product(String name, String description, BigDecimal amount, String s3ImageLink) {
-        this.name = name;
-        this.description = description;
-        this.amount = amount;
-        this.s3ImageLink = s3ImageLink;
-    }
-
-    public Product(Long id, String name, String description, BigDecimal amount, String s3ImageLink) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.amount = amount;
-        this.s3ImageLink = s3ImageLink;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
