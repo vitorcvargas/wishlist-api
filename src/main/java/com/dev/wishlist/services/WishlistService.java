@@ -23,6 +23,7 @@ public class WishlistService {
     }
 
     public void addToWishlist(final Product product, final Long userId) {
+        logger.info("action=started_adding_product_to_wishlist product={}", product);
 
         final Wishlist wishlist = wishlistRepository.findByUserId(userId).orElse(new Wishlist());
         int wishlistSize = wishlist.getProducts().size();
@@ -38,5 +39,7 @@ public class WishlistService {
 
         wishlistRepository.save(wishlist);
         notifier.notify(userId, product.getId());
+
+        logger.info("action=finished_adding_product_to_wishlist product={}", product);
     }
 }
