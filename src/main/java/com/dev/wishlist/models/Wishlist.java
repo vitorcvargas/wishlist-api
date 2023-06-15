@@ -52,4 +52,13 @@ public class Wishlist {
         this.userId = userId;
         this.products = products;
     }
+
+    @Override
+    public String toString() {
+        return "Wishlist{" +
+                "id='" + id + '\'' +
+                ", userId=" + userId +
+                ", products=" + products +
+                '}';
+    }
 }

@@ -38,7 +38,7 @@ public class WishlistService {
         wishlist.addProduct(product);
 
         wishlistRepository.save(wishlist);
-        notifier.notify(userId, product.getId());
+        notifier.notify(userId, product.getProductId());
 
         logger.info("action=finished_adding_product_to_wishlist product={}", product);
     }
