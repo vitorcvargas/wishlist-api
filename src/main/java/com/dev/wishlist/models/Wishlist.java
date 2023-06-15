@@ -3,10 +3,9 @@ package com.dev.wishlist.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+import java.util.Set;
 
 @Document
 public class Wishlist {
@@ -16,13 +15,10 @@ public class Wishlist {
 
     private Long userId;
 
-    private List<Product> products = new ArrayList<>();
+    private Set<Product> products = new HashSet<>();
 
-    public boolean addProduct(final Product product) {
-        if (this.products.size() == MAX_WISHLIST_SIZE)
-            return false;
-
-        return products.add(product);
+    public void addProduct(final Product product) {
+        products.add(product);
     }
 
     public String getId() {
@@ -41,18 +37,18 @@ public class Wishlist {
         this.userId = userId;
     }
 
-    public List<Product> getProducts() {
+    public Set<Product> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(Set<Product> products) {
         this.products = products;
     }
 
     public Wishlist() {
     }
 
-    public Wishlist(Long userId, List<Product> products) {
+    public Wishlist(Long userId, Set<Product> products) {
         this.userId = userId;
         this.products = products;
     }

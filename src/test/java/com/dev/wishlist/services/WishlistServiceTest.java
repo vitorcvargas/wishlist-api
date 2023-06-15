@@ -13,8 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.dev.wishlist.testutils.ProductCreator.createProductListWithMaxCapacity;
 import static com.dev.wishlist.testutils.ProductCreator.createSingleProduct;
@@ -49,13 +51,30 @@ public class WishlistServiceTest {
 
         final Long userId = 1L;
         Product product = createSingleProduct();
-        List<Product> products = createProductListWithMaxCapacity();
+        Set<Product> products = createProductListWithMaxCapacity();
 
         when(wishlistRepository.findByUserId(1L))
                 .thenReturn(Optional.of(new Wishlist(1L, products)));
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> wishlistService.addToWishlist(product, userId));
         assertThat(badRequestException.getMessage()).isEqualTo("It was not possible to add the selected product to the wishlist as it is already full.");
+        verify(wishlistRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when user tries to add a product that was already added")
+    void shouldThrowExceptionWhenProductWasAlreadyAdded() {
+
+        final Long userId = 1L;
+        Product product = createSingleProduct();
+        Set<Product> products = new HashSet<>();
+        products.add(product);
+
+        when(wishlistRepository.findByUserId(1L))
+                .thenReturn(Optional.of(new Wishlist(1L, products)));
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> wishlistService.addToWishlist(product, userId));
+        assertThat(badRequestException.getMessage()).isEqualTo("Product already added to wishlist.");
         verify(wishlistRepository, times(1)).findByUserId(userId);
     }
 
