@@ -2,8 +2,10 @@ version: "3.8"
 
 services:
   wishlist-api:
+    container_name: wishlist-api
     depends_on:
       - mongodb
+      - redis
     build:
       context: ../
       dockerfile: Dockerfile.dev
@@ -17,11 +19,13 @@ services:
       - FINANCIAL_ALERT_DB_URI=mongodb://mongodb/wishlist-api
       - DATABASE=wishlist-api
       - AUTHENTICATION_DATABASE=authentication-database
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   mongodb:
     image: bitnami/mongodb:latest
-    container_name: "mongodb"
+    container_name: mongodb
     restart: always
     ports:
       - 27017:27017
@@ -30,6 +34,19 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
+
+  redis:
+    image: redis
+    container_name: redis
+    logging:
+      driver: none
+    ports:
+      - 6379:6379
+    networks:
+      - wishlist-api
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 
 networks:
   wishlist-api:
