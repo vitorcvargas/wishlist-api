@@ -3,26 +3,37 @@ package com.dev.wishlist.controllers;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.testutils.ProductCreator;
 import com.dev.wishlist.testutils.integration.BaseIT;
+import com.dev.wishlist.testutils.integration.consumers.KafkaTestConsumer;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static com.dev.wishlist.testutils.ProductCreator.createProductListWithMaxCapacity;
 import static com.dev.wishlist.testutils.ProductCreator.createSingleProduct;
-import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WishlistControllerIT extends BaseIT {
 
+    List<ConsumerRecord<Long, Long>> consumerRecords = new ArrayList<>();
+
     @Test
     @DisplayName("Should add product to wishlist and return 201 status")
     void shouldAddProductToWishlist() {
+
+        KafkaTestConsumer kafkaTestConsumer = new KafkaTestConsumer(kafkaContainer.getBootstrapServers(), "test_group");
+
+        kafkaTestConsumer.subscribe(singletonList("wishlist.product.added"));
+
         Product product = createSingleProduct();
 
         final String response = given()
@@ -32,6 +43,8 @@ public class WishlistControllerIT extends BaseIT {
                 .statusCode(201)
                 .extract().response().getBody().asString();
 
+        ConsumerRecords<Long, Long> records = kafkaTestConsumer.poll();
+        assertThat(records.count()).isEqualTo(1);
         assertThat(response).isEqualTo("Product added to wishlist");
     }
 
@@ -84,7 +97,7 @@ public class WishlistControllerIT extends BaseIT {
     private void addProductsToWishlistUpToItsLimit() {
         Set<Product> productListWithMaxCapacity = createProductListWithMaxCapacity();
 
-        for(Product product : productListWithMaxCapacity) {
+        for (Product product : productListWithMaxCapacity) {
             given()
                     .contentType(ContentType.JSON).and().body(product)
                     .when().post(format("/wishlist/%s", 1L))
