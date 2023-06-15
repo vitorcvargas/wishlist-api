@@ -10,3 +10,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_URL}
     topics: ${TOPICS}
+
+logging:
+  pattern:
+    console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss} - requestTraceid=%X{requestTraceId} - %msg%n"

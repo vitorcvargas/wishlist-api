@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.dev.wishlist.testutils.ProductCreator.createProductListWithMaxCapacity;
 import static com.dev.wishlist.testutils.ProductCreator.createSingleProduct;
@@ -38,6 +39,7 @@ public class WishlistControllerIT extends BaseIT {
 
         final String response = given()
                 .contentType(ContentType.JSON).and().body(product)
+                .and().header("x-request-trace-id", UUID.randomUUID())
                 .when().post(format("/wishlist/%s", 1L))
                 .then().assertThat()
                 .statusCode(201)
