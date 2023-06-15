@@ -4,6 +4,7 @@ import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.WishlistRepository;
+import com.dev.wishlist.testutils.ProductCreator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,15 +32,12 @@ public class WishlistServiceTest {
     @Mock
     WishlistRepository wishlistRepository;
 
-    @Mock
-    Wishlist wishlist;
-
     @Test
     @DisplayName("Should add product to wishlist")
     void shouldAddProductToWishlist() {
 
         final Long userId = 1L;
-        Product product = new Product(1L, "Fridge", "Top notch", new BigDecimal("3.999"), "https:somelink");
+        Product product = ProductCreator.createSingleProduct();
 
         assertDoesNotThrow(() -> wishlistService.addToWishlist(product, userId));
         verify(wishlistRepository, times(1)).findByUserId(userId);
