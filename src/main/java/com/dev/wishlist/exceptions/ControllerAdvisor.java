@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
 public class ControllerAdvisor {
@@ -19,6 +20,12 @@ public class ControllerAdvisor {
     public ResponseEntity<ExceptionResponse> handleBadRequestException(final BadRequestException ex) {
         return getResponseEntity(ex, BAD_REQUEST);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNotFoundException(final NotFoundException ex) {
+        return getResponseEntity(ex, NOT_FOUND);
+    }
+
 
     private ResponseEntity<ExceptionResponse> getResponseEntity(final GlobalException ex, final HttpStatus httpStatus) {
         final ExceptionResponse response = ExceptionResponseMapper.INSTANCE.globalExceptionToExceptionResponse(ex);

@@ -1,22 +1,24 @@
 package com.dev.wishlist.models;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.math.BigDecimal;
 
 @RedisHash
-public class ProductDetails {
+public class ProductCatalog {
 
+    @Id
     private Long id;
     private String name;
     private String description;
     private BigDecimal amount;
     private String s3ImageLink;
 
-    public ProductDetails() {
+    public ProductCatalog() {
     }
 
-    public ProductDetails(Long id, String name, String description, BigDecimal amount, String s3ImageLink) {
+    public ProductCatalog(Long id, String name, String description, BigDecimal amount, String s3ImageLink) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,7 +26,7 @@ public class ProductDetails {
         this.s3ImageLink = s3ImageLink;
     }
 
-    public ProductDetails(String name, String description, BigDecimal amount, String s3ImageLink) {
+    public ProductCatalog(String name, String description, BigDecimal amount, String s3ImageLink) {
         this.name = name;
         this.description = description;
         this.amount = amount;
@@ -73,7 +75,7 @@ public class ProductDetails {
 
     @Override
     public String toString() {
-        return "ProductDetails{" +
+        return "ProductCatalog{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

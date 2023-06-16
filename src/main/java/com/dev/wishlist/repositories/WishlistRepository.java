@@ -14,7 +14,7 @@ public interface WishlistRepository extends MongoRepository<Wishlist, Long> {
 
     Optional<Wishlist> findByUserId(final Long userId);
 
-    @Query(value = "{userId : ?0, products:{$elemMatch:{name:/?1/}}}",
+        @Query(value = "{userId : ?0, products:{$elemMatch:{name: {$regex: /?1/, $options: i}}}}",
             fields = "{products:1, _id:0}")
-    List<ProductProjection> findAllProductsByUserIdAndSearchString(final Long userId, final String search);
+    Optional<ProductProjection> findAllProductsByUserIdAndSearchInput(final Long userId, final String search);
 }
