@@ -127,7 +127,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "nike")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/%s", 1L))
+                .when().get(format("/wishlist/filter/%s", 1L))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().jsonPath();
@@ -147,7 +147,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "mock")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/%s", 1L))
+                .when().get(format("/wishlist/filter/%s", 1L))
                 .then().assertThat()
                 .statusCode(404)
                 .extract().response().jsonPath();
@@ -166,7 +166,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "mock")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/%s", 1L))
+                .when().get(format("/wishlist/filter/%s", 1L))
                 .then().assertThat()
                 .statusCode(404)
                 .extract().response().jsonPath();
@@ -175,7 +175,27 @@ public class WishlistControllerIT extends BaseIT {
         final Object message = response.get("message");
 
         assertThat(code).isEqualTo(4);
-        assertThat(message).isEqualTo("User not found with id: 1");
+        assertThat(message).isEqualTo("Wishlist not found for user with id: 1");
+    }
+
+    @Test
+    @DisplayName("Should find all products")
+    void shouldFindAllProducts() {
+        wishlistRepository.save(createWishlistWithFullSize(1L));
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().get(format("/wishlist/%s", 1L))
+                .then().assertThat()
+                .statusCode(200)
+                .extract().response().jsonPath();
+
+        final Object userId = response.get("userId");
+        final List<ProductCatalog> products = response.get("products");
+
+        assertThat(userId).isEqualTo(1);
+        assertThat(products.size()).isEqualTo(20);
     }
 
     private Wishlist createWishlistWithFullSize(long userId) {

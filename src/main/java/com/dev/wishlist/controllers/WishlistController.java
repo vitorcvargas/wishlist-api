@@ -38,7 +38,7 @@ public class WishlistController {
         return ResponseEntity.status(CREATED).body("Product added to wishlist");
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/filter/{userId}")
     public ResponseEntity<WishlistResponse> findProducts(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @RequestParam final String searchInput) {
         final String params = format("userId: %s, searchInput: %s", userId, searchInput);
         logger.info(REQUEST_RECEIVED, "findProducts", GET, params);
@@ -46,6 +46,18 @@ public class WishlistController {
         WishlistResponse products = wishlistService.findProducts(userId, searchInput);
 
         logger.info(REQUEST_RESPONSE_WITH_BODY, "findProducts", OK.value(), products);
+
+        return ResponseEntity.status(OK).body(products);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId) {
+        final String params = format("userId: %s", userId);
+        logger.info(REQUEST_RECEIVED, "findAllProducts", GET, params);
+
+        WishlistResponse products = wishlistService.findAllProducts(userId);
+
+        logger.info(REQUEST_RESPONSE_WITH_BODY, "findAllProducts", OK.value(), products);
 
         return ResponseEntity.status(OK).body(products);
     }

@@ -55,10 +55,10 @@ public class WishlistService {
     }
 
     public WishlistResponse findProducts(final Long userId, final String searchInput) {
-        logger.info("action=started_finding_products searchInput={}", searchInput);
+        logger.info("action=started_finding_products, userId={}, searchInput={}", userId, searchInput);
 
         List<Long> productIds = wishlistRepository.findByUserId(userId)
-                .orElseThrow(() -> NotFoundException.userNotFound(userId))
+                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId))
                 .getProducts()
                 .stream()
                 .filter(product -> product.getName().toLowerCase().matches(format(".*%s.*", searchInput.toLowerCase())))
@@ -72,7 +72,26 @@ public class WishlistService {
                 StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
                         .toList();
 
-        logger.info("action=finished_finding_products searchInput={}", searchInput);
+        logger.info("action=finished_finding_products, userId={}, searchInput={}", userId, searchInput);
+
+        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+    }
+
+    public WishlistResponse findAllProducts(final Long userId) {
+        logger.info("action=started_finding_all_products, userId={}", userId);
+
+        List<Long> productIds = wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId))
+                .getProducts()
+                .stream()
+                .map(Product::getProductId)
+                .toList();
+
+        List<ProductCatalog> products =
+                StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
+                        .toList();
+
+        logger.info("action=finished_finding_all_products, userId={}", userId);
 
         return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
     }
