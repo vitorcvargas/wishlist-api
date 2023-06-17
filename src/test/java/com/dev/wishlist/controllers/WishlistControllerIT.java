@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -196,6 +197,25 @@ public class WishlistControllerIT extends BaseIT {
 
         assertThat(userId).isEqualTo(1);
         assertThat(products.size()).isEqualTo(20);
+    }
+
+    @Test
+    @DisplayName("Should delete a single product")
+    void shouldDeleteASingleProduct() {
+        wishlistRepository.save(createWishlistWithFullSize(1L));
+
+        final String response = given()
+                .contentType(ContentType.JSON)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().delete(format("/wishlist/%s/%s", 1L, 1L))
+                .then().assertThat()
+                .statusCode(200)
+                .extract().response().getBody().asString();
+
+        Wishlist wishlist = wishlistRepository.findByUserId(1L).orElse(new Wishlist());
+
+        assertThat(response).isEqualTo("Product deleted.");
+        assertThat(wishlist.getProducts().size()).isEqualTo(19);
     }
 
     private Wishlist createWishlistWithFullSize(long userId) {

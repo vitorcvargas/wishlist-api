@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
@@ -66,7 +68,7 @@ public class WishlistService {
                 .toList();
 
         if (productIds.isEmpty())
-            throw NotFoundException.productNotFound(searchInput);
+            throw NotFoundException.productNotFoundWithSearchInput(searchInput);
 
         List<ProductCatalog> products =
                 StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
@@ -94,5 +96,26 @@ public class WishlistService {
         logger.info("action=finished_finding_all_products, userId={}", userId);
 
         return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+    }
+
+    public void deleteProduct(final Long userId, final Long productId) {
+        logger.info("action=started_deleting_product, userId={}, productId={}", userId, productId);
+
+        final Wishlist wishlist = wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId));
+
+        Optional<Product> productOptional = wishlist.getProducts()
+                .stream()
+                .filter(product -> Objects.equals(product.getProductId(), productId))
+                .findFirst();
+
+        if(productOptional.isEmpty())
+            throw NotFoundException.productNotFoundWithId(productId);
+
+        wishlist.getProducts().remove(productOptional.get());
+
+        wishlistRepository.save(wishlist);
+
+        logger.info("action=finished_deleting_product, userId={}, productId={}", userId, productId);
     }
 }
