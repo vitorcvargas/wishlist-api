@@ -9,7 +9,7 @@ import com.dev.wishlist.models.ProductProjection;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.ProductCatalogRepository;
 import com.dev.wishlist.repositories.WishlistRepository;
-import com.dev.wishlist.testutils.ProductCreator;
+import com.dev.wishlist.testutils.creators.ProductCreator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.dev.wishlist.testutils.ProductCreator.createProductListWithMaxCapacity;
-import static com.dev.wishlist.testutils.ProductCreator.createSingleProduct;
+import static com.dev.wishlist.testutils.creators.ProductCreator.createProductSetWithMaxCapacity;
+import static com.dev.wishlist.testutils.creators.ProductCreator.createSingleProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,7 +64,7 @@ public class WishlistServiceTest {
 
         final Long userId = 1L;
         Product product = createSingleProduct();
-        Set<Product> products = createProductListWithMaxCapacity();
+        Set<Product> products = createProductSetWithMaxCapacity();
 
         when(wishlistRepository.findByUserId(1L))
                 .thenReturn(Optional.of(new Wishlist(1L, products)));
@@ -102,18 +102,18 @@ public class WishlistServiceTest {
 
         projection.setProducts(List.of(product));
 
-        when(wishlistRepository.findAllProductsByUserIdAndSearchInput(1L, "ni"))
-                .thenReturn(Optional.of(projection));
+        when(wishlistRepository.findByUserId(userId))
+                .thenReturn(Optional.of(new Wishlist(userId, Set.of(product))));
 
         when(productCatalogRepository.findAllById(anyList()))
                 .thenReturn(List.of(productCatalog));
 
-        WishlistResponse wishlistResponse = assertDoesNotThrow(() -> wishlistService.findProductsInWishlist(userId, "ni"));
+        WishlistResponse wishlistResponse = assertDoesNotThrow(() -> wishlistService.findProducts(userId, "ni"));
 
         assertThat(wishlistResponse.getUserId()).isEqualTo(userId);
         assertThat(wishlistResponse.getProducts()).isEqualTo(List.of(productCatalog));
 
-        verify(wishlistRepository, times(1)).findAllProductsByUserIdAndSearchInput(userId, "ni");
+        verify(wishlistRepository, times(1)).findByUserId(userId);
         verify(productCatalogRepository, times(1)).findAllById(anyList());
     }
 
@@ -121,12 +121,12 @@ public class WishlistServiceTest {
     @DisplayName("Should not find a product by its name and throw exception")
     void shouldNotFindAProductByItsNameAndThrowException() {
 
-        when(wishlistRepository.findAllProductsByUserIdAndSearchInput(1L, "ni"))
+        when(wishlistRepository.findByUserId(1L))
                 .thenReturn(Optional.empty());
 
-        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> wishlistService.findProductsInWishlist(1L, "ni"));
+        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> wishlistService.findProducts(1L, "ni"));
         assertThat(notFoundException.getMessage()).isEqualTo("Product not found with search input: ni");
-        verify(wishlistRepository, times(1)).findAllProductsByUserIdAndSearchInput(1L, "ni");
+        verify(wishlistRepository, times(1)).findByUserId(1L);
     }
 
 }
