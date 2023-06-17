@@ -128,4 +128,42 @@ public class WishlistServiceTest {
         verify(wishlistRepository, times(1)).findByUserId(1L);
     }
 
+    @Test
+    @DisplayName("Should not find wishlist when userId is invalid and throw exception")
+    void shouldNotFindWishlistWhenUserIdIsInvalid() {
+
+        final Long userId = 1L;
+
+        when(wishlistRepository.findByUserId(userId))
+                .thenReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> wishlistService.findProducts(1L, "mock"));
+        assertThat(notFoundException.getMessage()).isEqualTo("Wishlist not found for user with id: 1");
+        verify(wishlistRepository, times(1)).findByUserId(1L);
+    }
+
+    @Test
+    @DisplayName("Should find all products")
+    void shouldFindAllProducts() {
+
+        final Long userId = 1L;
+        Product product = createSingleProduct();
+        ProductCatalog productCatalog1 = new ProductCatalog(1L, "Nike", "Nice shoes", new BigDecimal("400.00"), "https://somelink");
+        ProductCatalog productCatalog2 = new ProductCatalog(2L, "JBL", "ear bug", new BigDecimal("300.00"), "https://somelink");
+
+        when(wishlistRepository.findByUserId(userId))
+                .thenReturn(Optional.of(new Wishlist(userId, Set.of(product))));
+
+        when(productCatalogRepository.findAllById(anyList()))
+                .thenReturn(List.of(productCatalog1, productCatalog2));
+
+        WishlistResponse wishlistResponse = assertDoesNotThrow(() -> wishlistService.findAllProducts(userId));
+
+        assertThat(wishlistResponse.getUserId()).isEqualTo(userId);
+        assertThat(wishlistResponse.getProducts()).isEqualTo(List.of(productCatalog1, productCatalog2));
+
+        verify(wishlistRepository, times(1)).findByUserId(userId);
+        verify(productCatalogRepository, times(1)).findAllById(anyList());
+    }
+
 }
