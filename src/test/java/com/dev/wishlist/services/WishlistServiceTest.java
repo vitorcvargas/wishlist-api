@@ -5,7 +5,6 @@ import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.exceptions.NotFoundException;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.models.ProductCatalog;
-import com.dev.wishlist.models.ProductProjection;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.ProductCatalogRepository;
 import com.dev.wishlist.repositories.WishlistRepository;
@@ -97,10 +96,7 @@ public class WishlistServiceTest {
 
         final Long userId = 1L;
         Product product = createSingleProduct();
-        ProductProjection projection = new ProductProjection();
         ProductCatalog productCatalog = new ProductCatalog(1L, "Nike", "Nice shoes", new BigDecimal("400.00"), "https://somelink");
-
-        projection.setProducts(List.of(product));
 
         when(wishlistRepository.findByUserId(userId))
                 .thenReturn(Optional.of(new Wishlist(userId, Set.of(product))));
@@ -121,11 +117,14 @@ public class WishlistServiceTest {
     @DisplayName("Should not find a product by its name and throw exception")
     void shouldNotFindAProductByItsNameAndThrowException() {
 
-        when(wishlistRepository.findByUserId(1L))
-                .thenReturn(Optional.empty());
+        final Long userId = 1L;
+        Product product = createSingleProduct();
 
-        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> wishlistService.findProducts(1L, "ni"));
-        assertThat(notFoundException.getMessage()).isEqualTo("Product not found with search input: ni");
+        when(wishlistRepository.findByUserId(userId))
+                .thenReturn(Optional.of(new Wishlist(userId, Set.of(product))));
+
+        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> wishlistService.findProducts(1L, "mock"));
+        assertThat(notFoundException.getMessage()).isEqualTo("Product not found with search input: mock");
         verify(wishlistRepository, times(1)).findByUserId(1L);
     }
 

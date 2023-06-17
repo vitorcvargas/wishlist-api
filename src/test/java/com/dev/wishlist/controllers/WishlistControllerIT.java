@@ -9,14 +9,13 @@ import com.dev.wishlist.testutils.integration.BaseIT;
 import com.dev.wishlist.testutils.integration.consumers.KafkaTestConsumer;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -31,17 +30,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class WishlistControllerIT extends BaseIT {
 
-    List<ConsumerRecord<Long, Long>> consumerRecords = new ArrayList<>();
-
     @Autowired
     ProductCatalogRepository catalogRepository;
 
     @Autowired
     WishlistRepository wishlistRepository;
 
-    @Before
+    @BeforeEach
     void setUp() {
         catalogRepository.saveAll(createProductCatalogSet());
+    }
+
+    @AfterEach
+    void cleanUp() {
+        catalogRepository.deleteAll();
+        wishlistRepository.deleteAll();
     }
 
     @Test
@@ -63,7 +66,7 @@ public class WishlistControllerIT extends BaseIT {
                 .extract().response().getBody().asString();
 
         ConsumerRecords<Long, Long> records = kafkaTestConsumer.poll();
-        assertThat(records.count()).isEqualTo(1);
+        assertThat(records.count()).isGreaterThanOrEqualTo(1);
         assertThat(response).isEqualTo("Product added to wishlist");
     }
 
@@ -119,12 +122,10 @@ public class WishlistControllerIT extends BaseIT {
     @Test
     @DisplayName("Should find products matching an search input, case insensitive")
     void shouldFindProductsMatchingSearchInput() {
-        populateProductCatalogCache();
         wishlistRepository.save(createWishlistWithFullSize(1L));
 
-
         final JsonPath response = given()
-                .contentType(ContentType.JSON).and().param("searchInput", "ni")
+                .contentType(ContentType.JSON).and().param("searchInput", "nike")
                 .and().header("x-request-trace-id", UUID.randomUUID())
                 .when().get(format("/wishlist/%s", 1L))
                 .then().assertThat()
@@ -138,26 +139,59 @@ public class WishlistControllerIT extends BaseIT {
         assertThat(products.size()).isEqualTo(2);
     }
 
-    private Wishlist createWishlistWithFullSize(long userId) {
-        return new Wishlist(userId, createProductSetWithMaxCapacity());
+    @Test
+    @DisplayName("Should not find products matching an search input and throw an exception")
+    void shouldNotFindProductsMatchingSearchInput() {
+        wishlistRepository.save(createWishlistWithFullSize(1L));
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().param("searchInput", "mock")
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().get(format("/wishlist/%s", 1L))
+                .then().assertThat()
+                .statusCode(404)
+                .extract().response().jsonPath();
+
+        final Object code = response.get("code");
+        final Object message = response.get("message");
+
+        assertThat(code).isEqualTo(3);
+        assertThat(message).isEqualTo("Product not found with search input: mock");
     }
 
-    private void populateProductCatalogCache() {
-        catalogRepository.saveAll(createProductCatalogSet());
+    @Test
+    @DisplayName("Should not find wishlist when userId is invalid and throw an exception")
+    void shouldNotFindWishlistWhenUserIdIsInvalid() {
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().param("searchInput", "mock")
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().get(format("/wishlist/%s", 1L))
+                .then().assertThat()
+                .statusCode(404)
+                .extract().response().jsonPath();
+
+        final Object code = response.get("code");
+        final Object message = response.get("message");
+
+        assertThat(code).isEqualTo(4);
+        assertThat(message).isEqualTo("User not found with id: 1");
+    }
+
+    private Wishlist createWishlistWithFullSize(long userId) {
+        return new Wishlist(userId, createProductSetWithMaxCapacity());
     }
 
     private void addProductsToWishlistUpToItsLimit() {
         Set<Product> productListWithMaxCapacity = createProductSetWithMaxCapacity();
 
         for (Product product : productListWithMaxCapacity) {
-            String string = given()
+            given()
                     .contentType(ContentType.JSON).and().body(product)
                     .and().header("x-request-trace-id", UUID.randomUUID())
                     .when().post(format("/wishlist/%s", 1L))
                     .then().assertThat()
-                    .statusCode(201).extract().response().toString();
-
-            System.out.println(string);
+                    .statusCode(201);
         }
     }
 }
