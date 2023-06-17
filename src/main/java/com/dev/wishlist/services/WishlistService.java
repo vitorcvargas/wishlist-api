@@ -58,12 +58,15 @@ public class WishlistService {
         logger.info("action=started_finding_products searchInput={}", searchInput);
 
         List<Long> productIds = wishlistRepository.findByUserId(userId)
-                .orElseThrow(() -> NotFoundException.productNotFound(searchInput))
+                .orElseThrow(() -> NotFoundException.userNotFound(userId))
                 .getProducts()
                 .stream()
                 .filter(product -> product.getName().toLowerCase().matches(format(".*%s.*", searchInput.toLowerCase())))
                 .map(Product::getProductId)
                 .toList();
+
+        if (productIds.isEmpty())
+            throw NotFoundException.productNotFound(searchInput);
 
         List<ProductCatalog> products =
                 StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)

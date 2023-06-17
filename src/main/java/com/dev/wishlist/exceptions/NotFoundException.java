@@ -9,6 +9,10 @@ public class NotFoundException extends GlobalException {
         return new NotFoundException(ExceptionMessage.PRODUCT_NOT_FOUND, format("%s", searchInput));
     }
 
+    public static NotFoundException userNotFound(Long userId) {
+        return new NotFoundException(ExceptionMessage.USER_NOT_FOUND, format("%s", userId));
+    }
+
     public NotFoundException(final ExceptionMessage exceptionMessage, final String... args) {
         super(exceptionMessage, args);
     }
