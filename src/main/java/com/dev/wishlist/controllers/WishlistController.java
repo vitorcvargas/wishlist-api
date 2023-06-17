@@ -61,4 +61,16 @@ public class WishlistController {
 
         return ResponseEntity.status(OK).body(products);
     }
+
+    @DeleteMapping("/{userId}/{productId}")
+    public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @PathVariable final Long productId) {
+        final String params = format("userId: %s, productId: %s", userId, productId);
+        logger.info(REQUEST_RECEIVED, "deleteProduct", GET, params);
+
+        wishlistService.deleteProduct(userId, productId);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "deleteProduct", OK.value());
+
+        return ResponseEntity.status(OK).body("Product deleted.");
+    }
 }
