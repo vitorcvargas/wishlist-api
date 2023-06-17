@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+import static java.lang.String.format;
 
 @Service
 public class WishlistService {
@@ -53,13 +54,14 @@ public class WishlistService {
         logger.info("action=finished_adding_product_to_wishlist product={}", product);
     }
 
-    public WishlistResponse findProductsInWishlist(final Long userId, final String searchInput) {
+    public WishlistResponse findProducts(final Long userId, final String searchInput) {
         logger.info("action=started_finding_products searchInput={}", searchInput);
 
-        List<Long> productIds = wishlistRepository.findAllProductsByUserIdAndSearchInput(userId, searchInput)
+        List<Long> productIds = wishlistRepository.findByUserId(userId)
                 .orElseThrow(() -> NotFoundException.productNotFound(searchInput))
                 .getProducts()
                 .stream()
+                .filter(product -> product.getName().toLowerCase().matches(format(".*%s.*", searchInput.toLowerCase())))
                 .map(Product::getProductId)
                 .toList();
 

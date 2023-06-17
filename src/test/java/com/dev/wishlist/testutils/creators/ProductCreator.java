@@ -1,14 +1,9 @@
-package com.dev.wishlist.testutils;
+package com.dev.wishlist.testutils.creators;
 
 import com.dev.wishlist.models.Product;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
 
 public class ProductCreator {
 
@@ -16,7 +11,7 @@ public class ProductCreator {
         return new Product(1L, "Nike revolution");
     }
 
-    public static Set<Product> createProductListWithMaxCapacity() {
+    public static Set<Product> createProductSetWithMaxCapacity() {
         Set<Product> products = new HashSet<>();
 
         products.add(new Product(1L, "Nike air"));
