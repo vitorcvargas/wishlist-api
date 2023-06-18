@@ -1,6 +1,6 @@
-package com.dev.wishlist.openapi;
+package com.dev.wishlist.rest.openapi;
 
-import com.dev.wishlist.dtos.WishlistResponse;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.exceptions.ExceptionResponse;
 import com.dev.wishlist.models.Product;
 import io.swagger.v3.oas.annotations.Operation;

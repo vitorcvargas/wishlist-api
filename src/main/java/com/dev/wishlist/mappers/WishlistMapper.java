@@ -1,6 +1,6 @@
 package com.dev.wishlist.mappers;
 
-import com.dev.wishlist.dtos.WishlistResponse;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.models.ProductCatalog;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

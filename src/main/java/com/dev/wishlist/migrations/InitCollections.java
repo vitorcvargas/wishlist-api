@@ -1,4 +1,4 @@
-package com.dev.wishlist.changelogs;
+package com.dev.wishlist.migrations;
 
 import com.mongodb.client.model.IndexOptions;
 import io.mongock.api.annotations.ChangeUnit;
