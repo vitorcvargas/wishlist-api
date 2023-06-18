@@ -10,14 +10,10 @@ import com.dev.wishlist.testutils.integration.consumers.KafkaTestConsumer;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,7 +22,6 @@ import static com.dev.wishlist.testutils.creators.ProductCreator.createProductSe
 import static com.dev.wishlist.testutils.creators.ProductCreator.createSingleProduct;
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WishlistControllerIT extends BaseIT {
@@ -36,6 +31,14 @@ public class WishlistControllerIT extends BaseIT {
 
     @Autowired
     WishlistRepository wishlistRepository;
+
+    static KafkaTestConsumer consumer;
+
+    @BeforeAll
+    static void subscribeToTopics() {
+        consumer = new KafkaTestConsumer(kafkaContainer.getBootstrapServers(), "test_group");
+        consumer.subscribe(List.of("wishlist.product.added", "wishlist.product.deleted"));
+    }
 
     @BeforeEach
     void setUp() {
@@ -51,11 +54,6 @@ public class WishlistControllerIT extends BaseIT {
     @Test
     @DisplayName("Should add product to wishlist and return 201 status")
     void shouldAddProductToWishlist() {
-
-        KafkaTestConsumer kafkaTestConsumer = new KafkaTestConsumer(kafkaContainer.getBootstrapServers(), "test_group");
-
-        kafkaTestConsumer.subscribe(singletonList("wishlist.product.added"));
-
         Product product = createSingleProduct();
 
         final String response = given()
@@ -66,7 +64,7 @@ public class WishlistControllerIT extends BaseIT {
                 .statusCode(201)
                 .extract().response().getBody().asString();
 
-        ConsumerRecords<Long, Long> records = kafkaTestConsumer.poll();
+        ConsumerRecords<Long, Long> records = consumer.poll();
         assertThat(records.count()).isGreaterThanOrEqualTo(1);
         assertThat(response).isEqualTo("Product added to wishlist");
     }
@@ -216,6 +214,9 @@ public class WishlistControllerIT extends BaseIT {
 
         assertThat(response).isEqualTo("Product deleted.");
         assertThat(wishlist.getProducts().size()).isEqualTo(19);
+
+        ConsumerRecords<Long, Long> records = consumer.poll();
+        assertThat(records.count()).isGreaterThanOrEqualTo(1);
     }
 
     private Wishlist createWishlistWithFullSize(long userId) {

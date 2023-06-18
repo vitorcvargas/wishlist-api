@@ -24,7 +24,7 @@ services:
       - REDIS_PORT=6379
       - KAFKA_URL=kafka:9092
       - KAFKA_ZOOKEEPER_URL=zookeeper:2181
-      - TOPICS=wishlist.product.added,wishlist.product.removed
+      - TOPICS=wishlist.product.added,wishlist.product.deleted
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   mongodb:

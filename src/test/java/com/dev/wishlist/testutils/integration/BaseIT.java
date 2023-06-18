@@ -46,6 +46,6 @@ public class BaseIT {
         System.setProperty("spring.redis.host", redisContainer.getHost());
         System.setProperty("spring.redis.port", redisContainer.getMappedPort(6379).toString());
         registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-        System.setProperty("spring.kafka.topics", "wishlist.product.added,wishlist.product.removed");
+        System.setProperty("spring.kafka.topics", "wishlist.product.added,wishlist.product.deleted");
     }
 }

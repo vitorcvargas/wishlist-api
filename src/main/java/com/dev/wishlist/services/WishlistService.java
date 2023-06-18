@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-import static com.dev.wishlist.utils.APIConstants.MAX_WISHLIST_SIZE;
+import static com.dev.wishlist.utils.APIConstants.*;
 import static java.lang.String.format;
 
 @Service
@@ -51,7 +51,7 @@ public class WishlistService {
         wishlist.addProduct(product);
 
         wishlistRepository.save(wishlist);
-        notifier.notify(userId, product.getProductId());
+        notifier.notify(PRODUCT_ADDED_TOPIC, userId, product.getProductId());
 
         logger.info("action=finished_adding_product_to_wishlist product={}", product);
     }
@@ -59,8 +59,7 @@ public class WishlistService {
     public WishlistResponse findProducts(final Long userId, final String searchInput) {
         logger.info("action=started_finding_products, userId={}, searchInput={}", userId, searchInput);
 
-        List<Long> productIds = wishlistRepository.findByUserId(userId)
-                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId))
+        List<Long> productIds = getWishlistOrElseThrow(userId)
                 .getProducts()
                 .stream()
                 .filter(product -> product.getName().toLowerCase().matches(format(".*%s.*", searchInput.toLowerCase())))
@@ -82,8 +81,7 @@ public class WishlistService {
     public WishlistResponse findAllProducts(final Long userId) {
         logger.info("action=started_finding_all_products, userId={}", userId);
 
-        List<Long> productIds = wishlistRepository.findByUserId(userId)
-                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId))
+        List<Long> productIds = getWishlistOrElseThrow(userId)
                 .getProducts()
                 .stream()
                 .map(Product::getProductId)
@@ -101,21 +99,26 @@ public class WishlistService {
     public void deleteProduct(final Long userId, final Long productId) {
         logger.info("action=started_deleting_product, userId={}, productId={}", userId, productId);
 
-        final Wishlist wishlist = wishlistRepository.findByUserId(userId)
-                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId));
+        final Wishlist wishlist = getWishlistOrElseThrow(userId);
 
         Optional<Product> productOptional = wishlist.getProducts()
                 .stream()
                 .filter(product -> Objects.equals(product.getProductId(), productId))
                 .findFirst();
 
-        if(productOptional.isEmpty())
+        if (productOptional.isEmpty())
             throw NotFoundException.productNotFoundWithId(productId);
 
         wishlist.getProducts().remove(productOptional.get());
 
         wishlistRepository.save(wishlist);
+        notifier.notify(PRODUCT_DELETED_TOPIC, userId, productId);
 
         logger.info("action=finished_deleting_product, userId={}, productId={}", userId, productId);
+    }
+
+    private Wishlist getWishlistOrElseThrow(final Long userId) {
+        return wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> NotFoundException.wishlistNotFoundForUserId(userId));
     }
 }
