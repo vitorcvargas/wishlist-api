@@ -1,11 +1,10 @@
 package com.dev.wishlist.services;
 
-import com.dev.wishlist.dtos.WishlistResponse;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.exceptions.NotFoundException;
 import com.dev.wishlist.mappers.WishlistMapper;
 import com.dev.wishlist.models.Product;
-import com.dev.wishlist.models.ProductCatalog;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.ProductCatalogRepository;
 import com.dev.wishlist.repositories.WishlistRepository;
@@ -13,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static com.dev.wishlist.utils.APIConstants.*;

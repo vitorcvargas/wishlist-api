@@ -1,6 +1,6 @@
 package com.dev.wishlist.configuration;
 
-import com.dev.wishlist.interceptors.RequestInterceptor;
+import com.dev.wishlist.rest.interceptors.RequestInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

@@ -1,4 +1,4 @@
-package com.dev.wishlist.dtos;
+package com.dev.wishlist.rest.dtos;
 
 import com.dev.wishlist.models.ProductCatalog;
 import io.swagger.v3.oas.annotations.media.Schema;

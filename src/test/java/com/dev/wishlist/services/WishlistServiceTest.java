@@ -1,6 +1,6 @@
 package com.dev.wishlist.services;
 
-import com.dev.wishlist.dtos.WishlistResponse;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.exceptions.BadRequestException;
 import com.dev.wishlist.exceptions.NotFoundException;
 import com.dev.wishlist.models.Product;
