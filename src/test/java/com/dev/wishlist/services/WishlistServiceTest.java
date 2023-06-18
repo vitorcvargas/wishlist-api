@@ -42,7 +42,7 @@ public class WishlistServiceTest {
     ProductCatalogRepository productCatalogRepository;
 
     @Mock
-    WishlistNotifier notifier;
+    WishlistNotifierService notifier;
 
     @Test
     @DisplayName("Should add product to wishlist")
