@@ -51,7 +51,7 @@ public class WishlistServiceTest {
         final Long userId = 1L;
         Product product = ProductCreator.createSingleProduct();
 
-        doNothing().when(notifier).notify(anyLong(), anyLong());
+        doNothing().when(notifier).notify(any(), anyLong(), anyLong());
 
         assertDoesNotThrow(() -> wishlistService.addToWishlist(product, userId));
         verify(wishlistRepository, times(1)).findByUserId(userId);

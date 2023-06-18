@@ -14,7 +14,7 @@ public class WishlistNotifier {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void notify(Long userId, Long productId) {
+    public void notify(String topic, Long userId, Long productId) {
         kafkaTemplate.send(PRODUCT_ADDED_TOPIC, userId, productId);
     }
 }
