@@ -19,20 +19,20 @@ public class KafkaAdminConfig {
     private List<String> topics;
     private final KafkaProperties properties;
 
-    public KafkaAdminConfig(KafkaProperties properties) {
+    public KafkaAdminConfig(final KafkaProperties properties) {
         this.properties = properties;
     }
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
-        var configs = new HashMap<String, Object>();
+        final var configs = new HashMap<String, Object>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getBootstrapServers());
         return new KafkaAdmin(configs);
     }
 
     @Bean
-    public KafkaAdmin.NewTopics newTopics(KafkaAdmin kafkaAdmin) {
-        KafkaAdmin.NewTopics newTopics = new KafkaAdmin.NewTopics(
+    public KafkaAdmin.NewTopics newTopics(final KafkaAdmin kafkaAdmin) {
+        final var newTopics = new KafkaAdmin.NewTopics(
                 topics.stream().map(topic -> TopicBuilder.name(topic).partitions(2).build())
                         .toArray(NewTopic[]::new));
 
