@@ -24,6 +24,7 @@
         <mongock.version>5.3.0</mongock.version>
         <aggregate.report.dir>target/site/jacoco/jacoco.xml</aggregate.report.dir>
         <surefire.version>2.22.2</surefire.version>
+        <springdoc.openapi.ui.verson>2.1.0</springdoc.openapi.ui.verson>
     </properties>
 
     <dependencies>
@@ -108,6 +109,13 @@
             <groupId>io.mongock</groupId>
             <artifactId>mongodb-springdata-v4-driver</artifactId>
             <version>${mongock.version}</version>
+        </dependency>
+
+        <!-- OPEN API -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.openapi.ui.verson}</version>
         </dependency>
 
     </dependencies>

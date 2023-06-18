@@ -17,3 +17,7 @@ logging:
 
 mongock:
   migration-scan-package: com.dev.wishlist.changelogs
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
