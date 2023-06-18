@@ -29,7 +29,7 @@ public class WishlistService {
     private final ProductCatalogRepository productCatalogRepository;
     private final WishlistNotifierService notifier;
 
-    public WishlistService(WishlistRepository wishlistRepository, ProductCatalogRepository productCatalogRepository, WishlistNotifierService notifier) {
+    public WishlistService(final WishlistRepository wishlistRepository, final ProductCatalogRepository productCatalogRepository, final WishlistNotifierService notifier) {
         this.wishlistRepository = wishlistRepository;
         this.productCatalogRepository = productCatalogRepository;
         this.notifier = notifier;
@@ -38,8 +38,8 @@ public class WishlistService {
     public void addToWishlist(final Product product, final Long userId) {
         logger.info("action=started_adding_product_to_wishlist product={}", product);
 
-        final Wishlist wishlist = wishlistRepository.findByUserId(userId).orElse(new Wishlist());
-        int wishlistSize = wishlist.getProducts().size();
+        final var wishlist = wishlistRepository.findByUserId(userId).orElse(new Wishlist());
+        final var wishlistSize = wishlist.getProducts().size();
 
         if (wishlistSize == MAX_WISHLIST_SIZE)
             throw BadRequestException.wishlistLimitReached();
@@ -59,7 +59,7 @@ public class WishlistService {
     public WishlistResponse findProducts(final Long userId, final String searchInput) {
         logger.info("action=started_finding_products, userId={}, searchInput={}", userId, searchInput);
 
-        List<Long> productIds = getWishlistOrElseThrow(userId)
+        final var productIds = getWishlistOrElseThrow(userId)
                 .getProducts()
                 .stream()
                 .filter(product -> product.getName().toLowerCase().matches(format(".*%s.*", searchInput.toLowerCase())))
@@ -69,7 +69,7 @@ public class WishlistService {
         if (productIds.isEmpty())
             throw NotFoundException.productNotFoundWithSearchInput(searchInput);
 
-        List<ProductCatalog> products =
+       final var products =
                 StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
                         .toList();
 
@@ -81,13 +81,13 @@ public class WishlistService {
     public WishlistResponse findAllProducts(final Long userId) {
         logger.info("action=started_finding_all_products, userId={}", userId);
 
-        List<Long> productIds = getWishlistOrElseThrow(userId)
+        final var productIds = getWishlistOrElseThrow(userId)
                 .getProducts()
                 .stream()
                 .map(Product::getProductId)
                 .toList();
 
-        List<ProductCatalog> products =
+        final var products =
                 StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
                         .toList();
 
@@ -99,9 +99,9 @@ public class WishlistService {
     public void deleteProduct(final Long userId, final Long productId) {
         logger.info("action=started_deleting_product, userId={}, productId={}", userId, productId);
 
-        final Wishlist wishlist = getWishlistOrElseThrow(userId);
+        final var wishlist = getWishlistOrElseThrow(userId);
 
-        Optional<Product> productOptional = wishlist.getProducts()
+        final var productOptional = wishlist.getProducts()
                 .stream()
                 .filter(product -> Objects.equals(product.getProductId(), productId))
                 .findFirst();

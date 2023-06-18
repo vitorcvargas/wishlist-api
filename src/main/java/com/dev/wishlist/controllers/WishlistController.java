@@ -27,8 +27,8 @@ public class WishlistController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @RequestBody final Product product) {
-        final String params = format("userId: %s, product: %s", userId, product);
+    public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestBody final Product product) {
+        final var params = format("userId: %s, product: %s", userId, product);
         logger.info(REQUEST_RECEIVED, "addToWishlist", POST, params);
 
         wishlistService.addToWishlist(product, userId);
@@ -39,11 +39,11 @@ public class WishlistController {
     }
 
     @GetMapping("/filter/{userId}")
-    public ResponseEntity<WishlistResponse> findProducts(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @RequestParam final String searchInput) {
-        final String params = format("userId: %s, searchInput: %s", userId, searchInput);
+    public ResponseEntity<WishlistResponse> findProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestParam final String searchInput) {
+        final var params = format("userId: %s, searchInput: %s", userId, searchInput);
         logger.info(REQUEST_RECEIVED, "findProducts", GET, params);
 
-        WishlistResponse products = wishlistService.findProducts(userId, searchInput);
+        final var products = wishlistService.findProducts(userId, searchInput);
 
         logger.info(REQUEST_RESPONSE_WITH_BODY, "findProducts", OK.value(), products);
 
@@ -51,11 +51,11 @@ public class WishlistController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId) {
-        final String params = format("userId: %s", userId);
+    public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId) {
+        final var params = format("userId: %s", userId);
         logger.info(REQUEST_RECEIVED, "findAllProducts", GET, params);
 
-        WishlistResponse products = wishlistService.findAllProducts(userId);
+        final var products = wishlistService.findAllProducts(userId);
 
         logger.info(REQUEST_RESPONSE_WITH_BODY, "findAllProducts", OK.value(), products);
 
@@ -63,8 +63,8 @@ public class WishlistController {
     }
 
     @DeleteMapping("/{userId}/{productId}")
-    public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") String requestTraceId, @PathVariable final Long userId, @PathVariable final Long productId) {
-        final String params = format("userId: %s, productId: %s", userId, productId);
+    public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final Long productId) {
+        final var params = format("userId: %s, productId: %s", userId, productId);
         logger.info(REQUEST_RECEIVED, "deleteProduct", GET, params);
 
         wishlistService.deleteProduct(userId, productId);

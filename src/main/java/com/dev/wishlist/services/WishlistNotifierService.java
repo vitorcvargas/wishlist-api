@@ -10,7 +10,7 @@ public class WishlistNotifierService {
 
     private final KafkaTemplate<Long, Long> kafkaTemplate;
 
-    public WishlistNotifierService(KafkaTemplate<Long, Long> kafkaTemplate) {
+    public WishlistNotifierService(final KafkaTemplate<Long, Long> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

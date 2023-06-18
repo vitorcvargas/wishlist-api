@@ -26,7 +26,7 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<Long, Long> producerFactory() {
 
-        Map<String, Object> configs = new HashMap<>();
+        final Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
@@ -34,7 +34,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<Long, Long> kafkaTemplate(ProducerFactory producerFactory) {
+    public KafkaTemplate<Long, Long> kafkaTemplate(final ProducerFactory producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }
