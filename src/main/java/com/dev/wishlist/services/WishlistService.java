@@ -27,9 +27,9 @@ public class WishlistService {
     private final Logger logger = LoggerFactory.getLogger(WishlistService.class);
     private final WishlistRepository wishlistRepository;
     private final ProductCatalogRepository productCatalogRepository;
-    private final WishlistNotifier notifier;
+    private final WishlistNotifierService notifier;
 
-    public WishlistService(WishlistRepository wishlistRepository, ProductCatalogRepository productCatalogRepository, WishlistNotifier notifier) {
+    public WishlistService(WishlistRepository wishlistRepository, ProductCatalogRepository productCatalogRepository, WishlistNotifierService notifier) {
         this.wishlistRepository = wishlistRepository;
         this.productCatalogRepository = productCatalogRepository;
         this.notifier = notifier;

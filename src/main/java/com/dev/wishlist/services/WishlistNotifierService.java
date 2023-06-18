@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import static com.dev.wishlist.utils.APIConstants.PRODUCT_ADDED_TOPIC;
 
 @Service
-public class WishlistNotifier {
+public class WishlistNotifierService {
 
     private final KafkaTemplate<Long, Long> kafkaTemplate;
 
-    public WishlistNotifier(KafkaTemplate<Long, Long> kafkaTemplate) {
+    public WishlistNotifierService(KafkaTemplate<Long, Long> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

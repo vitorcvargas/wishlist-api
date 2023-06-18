@@ -43,9 +43,9 @@ public class BaseIT {
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
-        System.setProperty("spring.redis.host", redisContainer.getHost());
-        System.setProperty("spring.redis.port", redisContainer.getMappedPort(6379).toString());
+        registry.add("spring.redis.host", redisContainer::getHost);
+        registry.add("spring.redis.port", () -> redisContainer.getMappedPort(6379).toString());
         registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-        System.setProperty("spring.kafka.topics", "wishlist.product.added,wishlist.product.deleted");
+        registry.add("spring.kafka.topics", () -> "wishlist.product.added,wishlist.product.deleted");
     }
 }
