@@ -1,5 +1,6 @@
 package com.dev.wishlist.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -13,6 +14,8 @@ public class ProductCatalog {
     private String name;
     private String description;
     private BigDecimal amount;
+
+    @JsonProperty("s3_image_link")
     private String s3ImageLink;
 
     public ProductCatalog() {

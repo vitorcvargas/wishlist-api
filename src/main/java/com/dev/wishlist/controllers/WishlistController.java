@@ -2,6 +2,7 @@ package com.dev.wishlist.controllers;
 
 import com.dev.wishlist.dtos.WishlistResponse;
 import com.dev.wishlist.models.Product;
+import com.dev.wishlist.openapi.WishlistOpenAPI;
 import com.dev.wishlist.services.WishlistService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/wishlist")
-public class WishlistController {
+public class WishlistController implements WishlistOpenAPI {
 
     private final Logger logger = LoggerFactory.getLogger(WishlistController.class);
     private final WishlistService wishlistService;
