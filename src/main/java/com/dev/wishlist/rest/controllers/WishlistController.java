@@ -1,7 +1,8 @@
 package com.dev.wishlist.rest.controllers;
 
-import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.models.Product;
+import com.dev.wishlist.rest.dtos.WishlistDTO;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.rest.openapi.WishlistOpenAPI;
 import com.dev.wishlist.services.WishlistService;
 import org.slf4j.Logger;
@@ -28,50 +29,74 @@ public class WishlistController implements WishlistOpenAPI {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestBody final Product product) {
-        final var params = format("userId: %s, product: %s", userId, product);
+    public ResponseEntity<WishlistResponse> createWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestBody final WishlistDTO wishlistDTO) {
+        final var params = format("userId=%s, wishlistDTO=%s", userId, wishlistDTO);
+        logger.info(REQUEST_RECEIVED, "createWishlist", POST, params);
+
+        WishlistResponse response = wishlistService.createWishlist(userId, wishlistDTO);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "createWishlist", CREATED.value());
+
+        return ResponseEntity.status(CREATED).body(response);
+    }
+
+    @PostMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestBody final Product product) {
+        final var params = format("userId=%s, wishlistId=%s, product=%s", userId, wishlistId, product);
         logger.info(REQUEST_RECEIVED, "addToWishlist", POST, params);
 
-        wishlistService.addToWishlist(product, userId);
+        wishlistService.addToWishlist(product, userId, wishlistId);
 
         logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "addToWishlist", CREATED.value());
 
         return ResponseEntity.status(CREATED).body("Product added to wishlist");
     }
 
-    @GetMapping("/filter/{userId}")
-    public ResponseEntity<WishlistResponse> findProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestParam final String searchInput) {
-        final var params = format("userId: %s, searchInput: %s", userId, searchInput);
+    @GetMapping("/filter/{userId}/{wishlistId}")
+    public ResponseEntity<WishlistResponse> filterProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final String searchInput) {
+        final var params = format("userId=%s, wishlistId=%s, searchInput=%s", userId, wishlistId, searchInput);
         logger.info(REQUEST_RECEIVED, "findProducts", GET, params);
 
-        final var products = wishlistService.findProducts(userId, searchInput);
+        final var products = wishlistService.filterProducts(userId, wishlistId, searchInput);
 
         logger.info(REQUEST_RESPONSE_WITH_BODY, "findProducts", OK.value(), products);
 
         return ResponseEntity.status(OK).body(products);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId) {
-        final var params = format("userId: %s", userId);
+    @GetMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId) {
+        final var params = format("userId=%s, wishlistId=%s", userId, wishlistId);
         logger.info(REQUEST_RECEIVED, "findAllProducts", GET, params);
 
-        final var products = wishlistService.findAllProducts(userId);
+        final var products = wishlistService.findAllProducts(userId, wishlistId);
 
         logger.info(REQUEST_RESPONSE_WITH_BODY, "findAllProducts", OK.value(), products);
 
         return ResponseEntity.status(OK).body(products);
     }
 
-    @DeleteMapping("/{userId}/{productId}")
-    public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final Long productId) {
-        final var params = format("userId: %s, productId: %s", userId, productId);
+    @DeleteMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final Long productId) {
+        final var params = format("userId=%s, wishlistId=%s, productId=%s", userId, wishlistId, productId);
         logger.info(REQUEST_RECEIVED, "deleteProduct", GET, params);
 
-        wishlistService.deleteProduct(userId, productId);
+        wishlistService.deleteProduct(userId, wishlistId, productId);
 
         logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "deleteProduct", OK.value());
 
         return ResponseEntity.status(OK).body("Product deleted.");
+    }
+
+    @PutMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<WishlistResponse> updateWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final WishlistDTO wishlistDTO) {
+        final var params = format("userId=%s, wishlistId=%s, body=%s", userId, wishlistId, wishlistDTO);
+        logger.info(REQUEST_RECEIVED, "updateWishlist", GET, params);
+
+        WishlistResponse wishlist = wishlistService.updateWishlist(userId, wishlistId, wishlistDTO);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "updateWishlist", OK.value());
+
+        return ResponseEntity.status(OK).body(wishlist);
     }
 }

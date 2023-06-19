@@ -5,6 +5,7 @@ import com.dev.wishlist.models.ProductCatalog;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.ProductCatalogRepository;
 import com.dev.wishlist.repositories.WishlistRepository;
+import com.dev.wishlist.rest.dtos.WishlistDTO;
 import com.dev.wishlist.testutils.integration.BaseIT;
 import com.dev.wishlist.testutils.integration.consumers.KafkaTestConsumer;
 import io.restassured.http.ContentType;
@@ -34,6 +35,9 @@ public class WishlistControllerIT extends BaseIT {
 
     static KafkaTestConsumer consumer;
 
+    final Long userId = 1L;
+    String wishlistId;
+
     @BeforeAll
     static void subscribeToTopics() {
         consumer = new KafkaTestConsumer(kafkaContainer.getBootstrapServers(), "test_group");
@@ -43,6 +47,24 @@ public class WishlistControllerIT extends BaseIT {
     @BeforeEach
     void setUp() {
         catalogRepository.saveAll(createProductCatalogSet());
+        createWishlist();
+    }
+
+    private void createWishlist() {
+        WishlistDTO wishlist = new WishlistDTO();
+        wishlist.setName("wishlist");
+        wishlist.setPublic(true);
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().body(wishlist)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().post(format("/wishlist/%s", userId))
+                .then().assertThat()
+                .statusCode(201)
+                .extract().response().jsonPath();
+
+        final String wishlistIdResponse = response.get("id");
+        wishlistId = wishlistIdResponse;
     }
 
     @AfterEach
@@ -59,7 +81,7 @@ public class WishlistControllerIT extends BaseIT {
         final String response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s", 1L))
+                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(201)
                 .extract().response().getBody().asString();
@@ -79,7 +101,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s", 1L))
+                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(400)
                 .extract().response().jsonPath();
@@ -99,14 +121,14 @@ public class WishlistControllerIT extends BaseIT {
         given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s", 1L))
+                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(201);
 
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s", 1L))
+                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(400)
                 .extract().response().jsonPath();
@@ -121,12 +143,12 @@ public class WishlistControllerIT extends BaseIT {
     @Test
     @DisplayName("Should find products matching an search input, case insensitive")
     void shouldFindProductsMatchingSearchInput() {
-        wishlistRepository.save(createWishlistWithFullSize(1L));
+        wishlistRepository.save(createWishlistWithFullSize(userId));
 
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "nike")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/filter/%s", 1L))
+                .when().get(format("/wishlist/filter/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().jsonPath();
@@ -141,12 +163,12 @@ public class WishlistControllerIT extends BaseIT {
     @Test
     @DisplayName("Should not find products matching an search input and throw an exception")
     void shouldNotFindProductsMatchingSearchInput() {
-        wishlistRepository.save(createWishlistWithFullSize(1L));
+        wishlistRepository.save(createWishlistWithFullSize(userId));
 
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "mock")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/filter/%s", 1L))
+                .when().get(format("/wishlist/filter/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(404)
                 .extract().response().jsonPath();
@@ -155,37 +177,18 @@ public class WishlistControllerIT extends BaseIT {
         final Object message = response.get("message");
 
         assertThat(code).isEqualTo(3);
-        assertThat(message).isEqualTo("Product not found with search input: mock");
-    }
-
-    @Test
-    @DisplayName("Should not find wishlist when userId is invalid and throw an exception")
-    void shouldNotFindWishlistWhenUserIdIsInvalid() {
-
-        final JsonPath response = given()
-                .contentType(ContentType.JSON).and().param("searchInput", "mock")
-                .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/filter/%s", 1L))
-                .then().assertThat()
-                .statusCode(404)
-                .extract().response().jsonPath();
-
-        final Object code = response.get("code");
-        final Object message = response.get("message");
-
-        assertThat(code).isEqualTo(4);
-        assertThat(message).isEqualTo("Wishlist not found for user with id: 1");
+        assertThat(message).isEqualTo(format("Product not found with searchInput=mock, userId=1, wishlistId=%s", wishlistId));
     }
 
     @Test
     @DisplayName("Should find all products")
     void shouldFindAllProducts() {
-        wishlistRepository.save(createWishlistWithFullSize(1L));
+        wishlistRepository.save(createWishlistWithFullSize(userId));
 
         final JsonPath response = given()
                 .contentType(ContentType.JSON)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/%s", 1L))
+                .when().get(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().jsonPath();
@@ -200,17 +203,17 @@ public class WishlistControllerIT extends BaseIT {
     @Test
     @DisplayName("Should delete a single product")
     void shouldDeleteASingleProduct() {
-        wishlistRepository.save(createWishlistWithFullSize(1L));
+        wishlistRepository.save(createWishlistWithFullSize(userId));
 
         final String response = given()
-                .contentType(ContentType.JSON)
+                .contentType(ContentType.JSON).and().param("productId", 1)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().delete(format("/wishlist/%s/%s", 1L, 1L))
+                .when().delete(format("/wishlist/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().getBody().asString();
 
-        Wishlist wishlist = wishlistRepository.findByUserId(1L).orElse(new Wishlist());
+        Wishlist wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId).orElse(new Wishlist());
 
         assertThat(response).isEqualTo("Product deleted.");
         assertThat(wishlist.getProducts().size()).isEqualTo(19);
@@ -220,7 +223,7 @@ public class WishlistControllerIT extends BaseIT {
     }
 
     private Wishlist createWishlistWithFullSize(long userId) {
-        return new Wishlist(userId, createProductSetWithMaxCapacity());
+        return new Wishlist(wishlistId, "wishlist", userId, createProductSetWithMaxCapacity());
     }
 
     private void addProductsToWishlistUpToItsLimit() {
@@ -230,7 +233,7 @@ public class WishlistControllerIT extends BaseIT {
             given()
                     .contentType(ContentType.JSON).and().body(product)
                     .and().header("x-request-trace-id", UUID.randomUUID())
-                    .when().post(format("/wishlist/%s", 1L))
+                    .when().post(format("/wishlist/%s/%s", userId, wishlistId))
                     .then().assertThat()
                     .statusCode(201);
         }
