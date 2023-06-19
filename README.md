@@ -25,7 +25,7 @@
 - Docker
   - Docker plays an important role in simulating the production environment
 - Mongock
-  - Used to keep track of migrations, such as the userId index creation.
+  - Used to apply and keep track of migrations, such as the userId index creation.
 - ResAssured
   - Heavily used for contract testing.
 - Testcontainers
