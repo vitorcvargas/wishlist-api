@@ -86,7 +86,7 @@ public class WishlistService {
         logger.info("action=started_updating_wishlist, userId={}, wishlist={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
 
         final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
-                .orElseThrow(() -> NotFoundException.productNotFound(userId, wishlistId));
+                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, wishlistId));
 
         List<Long> productIds = wishlist.getProducts().stream().map(Product::getProductId).toList();
 
@@ -107,7 +107,7 @@ public class WishlistService {
         logger.info("action=started_remove_wishlist, userId={}, wishlistId={}", userId, wishlistId);
 
         final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
-                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, null));
+                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, wishlistId));
 
         wishlistRepository.delete(wishlist);
 
