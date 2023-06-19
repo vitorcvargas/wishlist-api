@@ -18,10 +18,12 @@ public class InitCollections {
     public void beforeExecution(final MongoTemplate mongoTemplate) {
         mongoTemplate.createCollection("wishlist", CollectionOptions.empty()
                         .validator(Validator.schema(MongoJsonSchema.builder()
-                                .required("userId", "products")
+                                .required("name", "userId", "products")
                                 .properties(
+                                        JsonSchemaProperty.string("name"),
                                         JsonSchemaProperty.int64("userId"),
-                                        JsonSchemaProperty.array("products")).build())))
+                                        JsonSchemaProperty.array("products"),
+                                        JsonSchemaProperty.bool("isPublic")).build())))
                 .createIndex(new Document("userId", 1), new IndexOptions().name("userId").unique(true));
     }
 

@@ -1,7 +1,5 @@
 package com.dev.wishlist.exceptions;
 
-import static java.lang.String.format;
-
 public class NotFoundException extends GlobalException {
 
 
