@@ -53,7 +53,7 @@ public class WishlistController implements WishlistOpenAPI {
         return ResponseEntity.status(OK).body(wishlists);
     }
 
-    @GetMapping("/{userId}/{wishlistId}")
+    @DeleteMapping("/{userId}/{wishlistId}")
     public ResponseEntity<String> deleteWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId) {
         final var params = format("userId=%s, wishlistId=%s", userId, wishlistId);
         logger.info(REQUEST_RECEIVED, "deleteWishlist", DELETE, params);
@@ -66,7 +66,7 @@ public class WishlistController implements WishlistOpenAPI {
     }
 
     @PutMapping("/{userId}/{wishlistId}")
-    public ResponseEntity<WishlistResponse> updateWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final WishlistDTO wishlistDTO) {
+    public ResponseEntity<WishlistResponse> updateWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestBody final WishlistDTO wishlistDTO) {
         final var params = format("userId=%s, wishlistId=%s, body=%s", userId, wishlistId, wishlistDTO);
         logger.info(REQUEST_RECEIVED, "updateWishlist", PUT, params);
 

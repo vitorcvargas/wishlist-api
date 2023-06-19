@@ -295,13 +295,14 @@ public class WishlistServiceTest {
     @Test
     @DisplayName("Should find all products")
     void shouldFindAllProducts() {
-
         Product product = createSingleProduct();
+        Product product2 = createSingleProduct();
+        product2.setProductId(2L);
         ProductCatalog productCatalog1 = new ProductCatalog(1L, "Nike", "Nice shoes", new BigDecimal("400.00"), "https://somelink");
         ProductCatalog productCatalog2 = new ProductCatalog(2L, "JBL", "ear bug", new BigDecimal("300.00"), "https://somelink");
 
         when(wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId))
-                .thenReturn(Optional.of(new Wishlist(wishlistId, "Birthday wishlist", userId, Set.of(product))));
+                .thenReturn(Optional.of(new Wishlist(wishlistId, "Birthday wishlist", userId, Set.of(product, product2))));
 
         when(productCatalogRepository.findAllById(anyList()))
                 .thenReturn(List.of(productCatalog1, productCatalog2));

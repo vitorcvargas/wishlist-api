@@ -74,7 +74,7 @@ public class WishlistService {
                     StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
                             .toList();
 
-            response.add(WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products));
+            response.add(WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(wish, products));
         });
 
         logger.info("action=finished_finding_all_wishlists, userId={}", userId);
@@ -100,7 +100,7 @@ public class WishlistService {
 
         logger.info("action=finished_updating_wishlist, userId={}, wishlistId={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
 
-        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(wishlist, products);
     }
 
     public void deleteWishlist(final Long userId, final String wishlistId) {
@@ -157,7 +157,7 @@ public class WishlistService {
 
         logger.info("action=finished_finding_products, userId={}, wishlistId={}, searchInput={}", userId, wishlistId, searchInput);
 
-        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(wishlist, products);
     }
 
     public WishlistResponse findAllProducts(final Long userId, final String wishlistId) {
@@ -174,7 +174,7 @@ public class WishlistService {
 
         logger.info("action=finished_finding_all_products, userId={}, wishlistId={}", userId, wishlistId);
 
-        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(wishlist, products);
     }
 
     public void deleteProduct(final Long userId, final String wishlistId, final Long productId) {

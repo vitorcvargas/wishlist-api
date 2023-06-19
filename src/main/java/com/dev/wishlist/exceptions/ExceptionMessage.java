@@ -10,7 +10,6 @@ public enum ExceptionMessage {
     WISHLIST_NOT_FOUND(6, "Wishlist not found with userId=%s, wishlistId=%s"),
     WISHLIST_ALREADY_CREATED(7, "Wishlist already created with name=%s, userId=%s");
 
-
     private int code;
     private String message;
 

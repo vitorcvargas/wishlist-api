@@ -15,6 +15,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,6 +55,106 @@ public class WishlistControllerIT extends BaseIT {
     void cleanUp() {
         catalogRepository.deleteAll();
         wishlistRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Should not create product to wishlist and return 400 status")
+    void shouldNotCreateWishlist() {
+        WishlistDTO wishlist = new WishlistDTO();
+        wishlist.setName("wishlist");
+        wishlist.setPublic(true);
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().body(wishlist)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().post(format("/wishlists/%s", userId))
+                .then().assertThat()
+                .statusCode(400)
+                .extract().response().jsonPath();
+
+        final Object code = response.get("code");
+        final Object message = response.get("message");
+
+        assertThat(code).isEqualTo(7);
+        assertThat(message).isEqualTo(format("Wishlist already created with name=%s, userId=%s", "wishlist", userId));
+    }
+
+    @Test
+    @DisplayName("Should update wishlist and return 200 status")
+    void shouldUpdateWishlist() {
+        WishlistDTO wishlist = new WishlistDTO();
+        wishlist.setName("newWishlistName");
+        wishlist.setPublic(true);
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().body(wishlist)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().put(format("/wishlists/%s/%s", userId, wishlistId))
+                .then().assertThat()
+                .statusCode(200)
+                .extract().response().jsonPath();
+
+        final Object newName = response.get("name");
+        assertThat(newName).isEqualTo("newWishlistName");
+    }
+
+    @Test
+    @DisplayName("Should get all wishlists and return 200 status")
+    void shouldGetAllWishlists() {
+        WishlistDTO wishlist = new WishlistDTO();
+        wishlist.setName("Birthday");
+        wishlist.setPublic(true);
+
+        given()
+                .contentType(ContentType.JSON).and().body(wishlist)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().post(format("/wishlists/%s", userId))
+                .then().assertThat()
+                .statusCode(201)
+                .extract().response().jsonPath();
+
+        final String getResponse = given()
+                .contentType(ContentType.JSON)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().get(format("/wishlists/%s", userId))
+                .then().assertThat()
+                .statusCode(200)
+                .extract().response().body().asPrettyString();
+
+        assertThat(getResponse).contains("\"name\": \"Birthday\"");
+        assertThat(getResponse).contains("\"name\": \"wishlist\"");
+    }
+
+    @Test
+    @DisplayName("Should delete wishlist and return 200 status")
+    void shouldDeleteWishlist() {
+
+        Optional<Wishlist> existingWishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId);
+        assertThat(existingWishlist.get()).isNotNull();
+
+        final String deleteResponse = given()
+                .contentType(ContentType.JSON)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().delete(format("/wishlists/%s/%s", userId, wishlistId))
+                .then().assertThat()
+                .statusCode(200)
+                .extract().response().body().asPrettyString();
+
+        assertThat(deleteResponse).isEqualTo("Wishlist deleted.");
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().get(format("/wishlists/products/%s/%s", userId, wishlistId))
+                .then().assertThat()
+                .statusCode(404)
+                .extract().response().jsonPath();
+
+        final Object code = response.get("code");
+        final Object message = response.get("message");
+
+        assertThat(code).isEqualTo(4);
+        assertThat(message).isEqualTo(format("No products found in wishlistId=%s, userId=%s", wishlistId, userId));
     }
 
     @Test

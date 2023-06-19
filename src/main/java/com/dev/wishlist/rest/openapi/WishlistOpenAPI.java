@@ -1,8 +1,8 @@
 package com.dev.wishlist.rest.openapi;
 
-import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.exceptions.ExceptionResponse;
 import com.dev.wishlist.models.Product;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
