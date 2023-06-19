@@ -1,4 +1,8 @@
-# Wishlist tech stack:
+# System Design
+
+![Screenshot](wishlist-system-design.png)
+
+## Wishlist tech stack:
 - Java 17
 - SpringBoot 3.1.0
 - MongoDB
