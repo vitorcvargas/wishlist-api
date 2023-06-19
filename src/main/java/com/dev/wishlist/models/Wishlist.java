@@ -13,9 +13,34 @@ public class Wishlist {
     @Id
     private String id;
 
+    private String name;
+
     private Long userId;
 
     private Set<Product> products = new HashSet<>();
+    private boolean isPublic = false;
+
+    public Wishlist(String id, String name, Long userId, Set<Product> products) {
+        this.id = id;
+        this.name = name;
+        this.userId = userId;
+        this.products = products;
+    }
+
+    public Wishlist(String name, Long userId, Set<Product> products, boolean isPublic) {
+        this.name = name;
+        this.userId = userId;
+        this.products = products;
+        this.isPublic = isPublic;
+    }
+
+    public Wishlist(String id, String name, Long userId, Set<Product> products, boolean isPublic) {
+        this.id = id;
+        this.name = name;
+        this.userId = userId;
+        this.products = products;
+        this.isPublic = isPublic;
+    }
 
     public void addProduct(final Product product) {
         products.add(product);
@@ -27,6 +52,14 @@ public class Wishlist {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getUserId() {
@@ -48,17 +81,22 @@ public class Wishlist {
     public Wishlist() {
     }
 
-    public Wishlist(Long userId, Set<Product> products) {
-        this.userId = userId;
-        this.products = products;
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 
     @Override
     public String toString() {
         return "Wishlist{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", userId=" + userId +
                 ", products=" + products +
+                ", isPublic=" + isPublic +
                 '}';
     }
 }

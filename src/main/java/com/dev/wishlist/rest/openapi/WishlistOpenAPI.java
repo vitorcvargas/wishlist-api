@@ -19,7 +19,7 @@ public interface WishlistOpenAPI {
                     @Content(schema = @Schema(implementation = ExceptionResponse.class))
             })
     })
-    ResponseEntity<String> addToWishlist(final String requestTraceId, final Long userId, final Product product);
+    ResponseEntity<String> addToWishlist(final String requestTraceId, final Long userId, final String wishlistId, final Product product);
 
     @Operation(summary = "Lists a sequence of filtered detailed products in a user's wishlist")
     @ApiResponses(value = {
@@ -28,14 +28,14 @@ public interface WishlistOpenAPI {
                     @Content(schema = @Schema(implementation = ExceptionResponse.class))
             })
     })
-    ResponseEntity<WishlistResponse> findProducts(final String requestTraceId, final Long userId, final String searchInput);
+    ResponseEntity<WishlistResponse> filterProducts(final String requestTraceId, final Long userId, final String wishlistId, final String searchInput);
 
     @Operation(summary = "Lists a sequence of detailed products in a user's wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(example = "Wishlist not found for user with id: {userId}"))})
     })
-    ResponseEntity<WishlistResponse> findAllProducts(final String requestTraceId, final Long userId);
+    ResponseEntity<WishlistResponse> findAllProducts(final String requestTraceId, final Long userId, final String wishlistId);
 
     @Operation(summary = "Deletes a product from the user's wishlist")
     @ApiResponses(value = {
@@ -44,5 +44,5 @@ public interface WishlistOpenAPI {
                     @Content(schema = @Schema(implementation = ExceptionResponse.class))
             })
     })
-    ResponseEntity<String> deleteProduct(final String requestTraceId, final Long userId, final Long productId);
+    ResponseEntity<String> deleteProduct(final String requestTraceId, final Long userId, final String wishlistId, final Long productId);
 }
