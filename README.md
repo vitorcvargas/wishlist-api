@@ -1,4 +1,5 @@
 # Wishlist tech stack:
+- Java 17
 - SpringBoot
 - MongoDB
 - Redis
