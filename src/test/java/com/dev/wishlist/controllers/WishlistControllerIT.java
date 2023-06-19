@@ -153,8 +153,8 @@ public class WishlistControllerIT extends BaseIT {
         final Object code = response.get("code");
         final Object message = response.get("message");
 
-        assertThat(code).isEqualTo(4);
-        assertThat(message).isEqualTo(format("No products found in wishlistId=%s, userId=%s", wishlistId, userId));
+        assertThat(code).isEqualTo(6);
+        assertThat(message).isEqualTo(format("Wishlist not found with userId=%s, wishlistId=%s", userId, wishlistId));
     }
 
     @Test

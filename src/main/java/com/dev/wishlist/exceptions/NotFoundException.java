@@ -7,10 +7,6 @@ public class NotFoundException extends GlobalException {
         return new NotFoundException(ExceptionMessage.PRODUCT_NOT_FOUND_WITH_SEARCH_INPUT, searchInput, userId.toString(), wishlistId);
     }
 
-    public static NotFoundException productNotFound(final Long userId, final String wishlistId) {
-        return new NotFoundException(ExceptionMessage.PRODUCT_NOT_FOUND, wishlistId, userId.toString());
-    }
-
     public static NotFoundException productNotFoundWithId(final Long productId, final Long userId, final String wishlistId) {
         return new NotFoundException(ExceptionMessage.PRODUCT_NOT_FOUND_WITH_ID, productId.toString(), userId.toString(), wishlistId);
     }
