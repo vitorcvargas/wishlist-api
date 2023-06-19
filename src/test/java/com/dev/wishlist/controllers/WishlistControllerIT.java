@@ -50,23 +50,6 @@ public class WishlistControllerIT extends BaseIT {
         createWishlist();
     }
 
-    private void createWishlist() {
-        WishlistDTO wishlist = new WishlistDTO();
-        wishlist.setName("wishlist");
-        wishlist.setPublic(true);
-
-        final JsonPath response = given()
-                .contentType(ContentType.JSON).and().body(wishlist)
-                .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s", userId))
-                .then().assertThat()
-                .statusCode(201)
-                .extract().response().jsonPath();
-
-        final String wishlistIdResponse = response.get("id");
-        wishlistId = wishlistIdResponse;
-    }
-
     @AfterEach
     void cleanUp() {
         catalogRepository.deleteAll();
@@ -81,7 +64,7 @@ public class WishlistControllerIT extends BaseIT {
         final String response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().post(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(201)
                 .extract().response().getBody().asString();
@@ -101,7 +84,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().post(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(400)
                 .extract().response().jsonPath();
@@ -121,14 +104,14 @@ public class WishlistControllerIT extends BaseIT {
         given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().post(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(201);
 
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().body(product)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().post(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().post(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(400)
                 .extract().response().jsonPath();
@@ -148,7 +131,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "nike")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/filter/%s/%s", userId, wishlistId))
+                .when().get(format("/wishlists/products/filter/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().jsonPath();
@@ -168,7 +151,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON).and().param("searchInput", "mock")
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/filter/%s/%s", userId, wishlistId))
+                .when().get(format("/wishlists/products/filter/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(404)
                 .extract().response().jsonPath();
@@ -188,7 +171,7 @@ public class WishlistControllerIT extends BaseIT {
         final JsonPath response = given()
                 .contentType(ContentType.JSON)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().get(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().get(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().jsonPath();
@@ -208,7 +191,7 @@ public class WishlistControllerIT extends BaseIT {
         final String response = given()
                 .contentType(ContentType.JSON).and().param("productId", 1)
                 .and().header("x-request-trace-id", UUID.randomUUID())
-                .when().delete(format("/wishlist/%s/%s", userId, wishlistId))
+                .when().delete(format("/wishlists/products/%s/%s", userId, wishlistId))
                 .then().assertThat()
                 .statusCode(200)
                 .extract().response().getBody().asString();
@@ -226,6 +209,24 @@ public class WishlistControllerIT extends BaseIT {
         return new Wishlist(wishlistId, "wishlist", userId, createProductSetWithMaxCapacity());
     }
 
+    private void createWishlist() {
+        WishlistDTO wishlist = new WishlistDTO();
+        wishlist.setName("wishlist");
+        wishlist.setPublic(true);
+
+        final JsonPath response = given()
+                .contentType(ContentType.JSON).and().body(wishlist)
+                .and().header("x-request-trace-id", UUID.randomUUID())
+                .when().post(format("/wishlists/%s", userId))
+                .then().assertThat()
+                .statusCode(201)
+                .extract().response().jsonPath();
+
+        final String wishlistIdResponse = response.get("id");
+        wishlistId = wishlistIdResponse;
+    }
+
+
     private void addProductsToWishlistUpToItsLimit() {
         Set<Product> productListWithMaxCapacity = createProductSetWithMaxCapacity();
 
@@ -233,7 +234,7 @@ public class WishlistControllerIT extends BaseIT {
             given()
                     .contentType(ContentType.JSON).and().body(product)
                     .and().header("x-request-trace-id", UUID.randomUUID())
-                    .when().post(format("/wishlist/%s/%s", userId, wishlistId))
+                    .when().post(format("/wishlists/products/%s/%s", userId, wishlistId))
                     .then().assertThat()
                     .statusCode(201);
         }

@@ -7,8 +7,8 @@ import com.dev.wishlist.models.Product;
 import com.dev.wishlist.models.Wishlist;
 import com.dev.wishlist.repositories.ProductCatalogRepository;
 import com.dev.wishlist.repositories.WishlistRepository;
-import com.dev.wishlist.rest.dtos.WishlistResponse;
 import com.dev.wishlist.rest.dtos.WishlistDTO;
+import com.dev.wishlist.rest.dtos.WishlistResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,83 @@ public class WishlistService {
         this.wishlistRepository = wishlistRepository;
         this.productCatalogRepository = productCatalogRepository;
         this.notifier = notifier;
+    }
+
+    public WishlistResponse createWishlist(Long userId, WishlistDTO wishlistDTO) {
+        logger.info("action=started_creating_wishlist, userId={}, wishlistDTO={}", userId, wishlistDTO);
+
+        final var isWishlistAlreadyPresent = wishlistRepository.findByUserId(userId)
+                .orElse(new ArrayList<>())
+                .stream()
+                .anyMatch(wishlist -> wishlist.getName().equals(wishlistDTO.getName()));
+
+        if (isWishlistAlreadyPresent)
+            throw BadRequestException.wishlistAlreadyCreatedWithName(wishlistDTO.getName(), userId);
+
+        Wishlist wishlist = new Wishlist();
+        wishlist.setName(wishlistDTO.getName());
+        wishlist.setUserId(userId);
+        wishlist.setPublic(wishlistDTO.getPublic());
+
+        Wishlist savedWishlist = wishlistRepository.save(wishlist);
+
+        logger.info("action=finished_creating_wishlist, userId={}, wishlistDTO={}", userId, wishlistDTO);
+
+        return new WishlistResponse(savedWishlist.getId(), savedWishlist.getName(), userId, new ArrayList<>(), savedWishlist.isPublic());
+    }
+
+    public List<WishlistResponse> getAllWishlists(Long userId) {
+        logger.info("action=started_finding_all_wishlists, userId={}", userId);
+
+        final var wishlist = wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, null));
+        final var response = new ArrayList<WishlistResponse>();
+
+        wishlist.forEach(wish -> {
+            List<Long> productIds = wish.getProducts().stream().map(Product::getProductId).toList();
+
+            final var products =
+                    StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
+                            .toList();
+
+            response.add(WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products));
+        });
+
+        logger.info("action=finished_finding_all_wishlists, userId={}", userId);
+
+        return response;
+    }
+
+    public WishlistResponse updateWishlist(Long userId, String wishlistId, WishlistDTO wishlistDTO) {
+        logger.info("action=started_updating_wishlist, userId={}, wishlist={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
+
+        final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
+                .orElseThrow(() -> NotFoundException.productNotFound(userId, wishlistId));
+
+        List<Long> productIds = wishlist.getProducts().stream().map(Product::getProductId).toList();
+
+        final var products =
+                StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
+                        .toList();
+
+        updateWishlistDBFromRequest(wishlist, wishlistDTO);
+
+        wishlistRepository.save(wishlist);
+
+        logger.info("action=finished_updating_wishlist, userId={}, wishlistId={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
+
+        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
+    }
+
+    public void deleteWishlist(final Long userId, final String wishlistId) {
+        logger.info("action=started_remove_wishlist, userId={}, wishlistId={}", userId, wishlistId);
+
+        final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
+                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, null));
+
+        wishlistRepository.delete(wishlist);
+
+        logger.info("action=finished_remove_wishlist, userId={}, wishlistId={}", userId, wishlistId);
     }
 
     public void addToWishlist(final Product product, final Long userId, final String wishlistId) {
@@ -122,27 +199,6 @@ public class WishlistService {
         logger.info("action=finished_deleting_product, userId={}, wishlistId={}, productId={}", userId, wishlistId, productId);
     }
 
-    public WishlistResponse updateWishlist(Long userId, String wishlistId, WishlistDTO wishlistDTO) {
-        logger.info("action=started_updating_wishlist, userId={}, wishlist={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
-
-        final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
-                .orElseThrow(() -> NotFoundException.productNotFound(userId, wishlistId));
-
-        List<Long> productIds = wishlist.getProducts().stream().map(Product::getProductId).toList();
-
-        final var products =
-                StreamSupport.stream(productCatalogRepository.findAllById(productIds).spliterator(), false)
-                        .toList();
-
-        updateWishlistDBFromRequest(wishlist, wishlistDTO);
-
-        wishlistRepository.save(wishlist);
-
-        logger.info("action=finished_updating_wishlist, userId={}, wishlistId={}, wishlistUpdate={}", userId, wishlistId, wishlistDTO);
-
-        return WishlistMapper.INSTANCE.wishlistGetRequestToWishlistResponse(userId, products);
-    }
-
     private void updateWishlistDBFromRequest(final Wishlist wishlist, final WishlistDTO request) {
         final var name = request.getName();
         final var isPublic = request.getPublic();
@@ -151,28 +207,5 @@ public class WishlistService {
             wishlist.setName(name);
         if (!isNull(isPublic))
             wishlist.setPublic(isPublic);
-    }
-
-    public WishlistResponse createWishlist(Long userId, WishlistDTO wishlistDTO) {
-        logger.info("action=started_creating_wishlist, userId={}, wishlistDTO={}", userId, wishlistDTO);
-
-        final var isWishlistAlreadyPresent = wishlistRepository.findByUserId(userId)
-                .orElse(new ArrayList<>())
-                .stream()
-                .anyMatch(wishlist -> wishlist.getName().equals(wishlistDTO.getName()));
-
-        if(isWishlistAlreadyPresent)
-            throw BadRequestException.wishlistAlreadyCreatedWithName(wishlistDTO.getName(), userId);
-
-        Wishlist wishlist = new Wishlist();
-        wishlist.setName(wishlistDTO.getName());
-        wishlist.setUserId(userId);
-        wishlist.setPublic(wishlistDTO.getPublic());
-
-        Wishlist savedWishlist = wishlistRepository.save(wishlist);
-
-        logger.info("action=finished_creating_wishlist, userId={}, wishlistDTO={}", userId, wishlistDTO);
-
-        return new WishlistResponse(savedWishlist.getId(), savedWishlist.getName(), userId, new ArrayList<>(), savedWishlist.isPublic());
     }
 }

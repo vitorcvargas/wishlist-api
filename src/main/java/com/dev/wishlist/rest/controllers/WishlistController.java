@@ -10,15 +10,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.dev.wishlist.utils.APIConstants.*;
 import static java.lang.String.format;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/wishlists")
 public class WishlistController implements WishlistOpenAPI {
 
     private final Logger logger = LoggerFactory.getLogger(WishlistController.class);
@@ -40,7 +41,43 @@ public class WishlistController implements WishlistOpenAPI {
         return ResponseEntity.status(CREATED).body(response);
     }
 
-    @PostMapping("/{userId}/{wishlistId}")
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<WishlistResponse>> getAllWishlists(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId) {
+        final var params = format("userId=%s", userId);
+        logger.info(REQUEST_RECEIVED, "getAllWishlists", GET, params);
+
+        List<WishlistResponse> wishlists = wishlistService.getAllWishlists(userId);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "getAllWishlists", OK.value());
+
+        return ResponseEntity.status(OK).body(wishlists);
+    }
+
+    @GetMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<String> deleteWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId) {
+        final var params = format("userId=%s, wishlistId=%s", userId, wishlistId);
+        logger.info(REQUEST_RECEIVED, "deleteWishlist", DELETE, params);
+
+        wishlistService.deleteWishlist(userId, wishlistId);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "deleteWishlist", OK.value());
+
+        return ResponseEntity.status(OK).body("Wishlist deleted.");
+    }
+
+    @PutMapping("/{userId}/{wishlistId}")
+    public ResponseEntity<WishlistResponse> updateWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final WishlistDTO wishlistDTO) {
+        final var params = format("userId=%s, wishlistId=%s, body=%s", userId, wishlistId, wishlistDTO);
+        logger.info(REQUEST_RECEIVED, "updateWishlist", PUT, params);
+
+        WishlistResponse wishlist = wishlistService.updateWishlist(userId, wishlistId, wishlistDTO);
+
+        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "updateWishlist", OK.value());
+
+        return ResponseEntity.status(OK).body(wishlist);
+    }
+
+    @PostMapping("/products/{userId}/{wishlistId}")
     public ResponseEntity<String> addToWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestBody final Product product) {
         final var params = format("userId=%s, wishlistId=%s, product=%s", userId, wishlistId, product);
         logger.info(REQUEST_RECEIVED, "addToWishlist", POST, params);
@@ -52,7 +89,7 @@ public class WishlistController implements WishlistOpenAPI {
         return ResponseEntity.status(CREATED).body("Product added to wishlist");
     }
 
-    @GetMapping("/filter/{userId}/{wishlistId}")
+    @GetMapping("/products/filter/{userId}/{wishlistId}")
     public ResponseEntity<WishlistResponse> filterProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final String searchInput) {
         final var params = format("userId=%s, wishlistId=%s, searchInput=%s", userId, wishlistId, searchInput);
         logger.info(REQUEST_RECEIVED, "findProducts", GET, params);
@@ -64,7 +101,7 @@ public class WishlistController implements WishlistOpenAPI {
         return ResponseEntity.status(OK).body(products);
     }
 
-    @GetMapping("/{userId}/{wishlistId}")
+    @GetMapping("/products/{userId}/{wishlistId}")
     public ResponseEntity<WishlistResponse> findAllProducts(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId) {
         final var params = format("userId=%s, wishlistId=%s", userId, wishlistId);
         logger.info(REQUEST_RECEIVED, "findAllProducts", GET, params);
@@ -76,27 +113,15 @@ public class WishlistController implements WishlistOpenAPI {
         return ResponseEntity.status(OK).body(products);
     }
 
-    @DeleteMapping("/{userId}/{wishlistId}")
+    @DeleteMapping("/products/{userId}/{wishlistId}")
     public ResponseEntity<String> deleteProduct(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final Long productId) {
         final var params = format("userId=%s, wishlistId=%s, productId=%s", userId, wishlistId, productId);
-        logger.info(REQUEST_RECEIVED, "deleteProduct", GET, params);
+        logger.info(REQUEST_RECEIVED, "deleteProduct", DELETE, params);
 
         wishlistService.deleteProduct(userId, wishlistId, productId);
 
         logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "deleteProduct", OK.value());
 
         return ResponseEntity.status(OK).body("Product deleted.");
-    }
-
-    @PutMapping("/{userId}/{wishlistId}")
-    public ResponseEntity<WishlistResponse> updateWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @PathVariable final String wishlistId, @RequestParam final WishlistDTO wishlistDTO) {
-        final var params = format("userId=%s, wishlistId=%s, body=%s", userId, wishlistId, wishlistDTO);
-        logger.info(REQUEST_RECEIVED, "updateWishlist", GET, params);
-
-        WishlistResponse wishlist = wishlistService.updateWishlist(userId, wishlistId, wishlistDTO);
-
-        logger.info(REQUEST_RESPONSE_WITHOUT_BODY, "updateWishlist", OK.value());
-
-        return ResponseEntity.status(OK).body(wishlist);
     }
 }
