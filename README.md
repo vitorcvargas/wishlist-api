@@ -17,13 +17,13 @@
 
 ## Explanation on the tech stack    
 - MongoDB
-  - As the model is semi-structured, and may change at a fast pace, a noSQL Database makes most sense.
+  - As the model is semi-structured, and may change at a fast pace, a noSQL Database makes the most sense.
 - Redis
-  - This application makes user of caching to retrieve the products' details in order to have a fair data consistency (note that we're not trying to achieve strong data consistency).
+  - This application makes use of caching to retrieve the products' details in order to have a fair data consistency (note that we're not trying to achieve strong data consistency).
 - Kafka
   - Kafka is used to notify when an event that may be relevant to other services occur
 - Docker
-  - Docker plays an important role in mocking the production environment
+  - Docker plays an important role in simulating the production environment
 - Mongock
   - Used to keep track of migrations, such as the userId index creation.
 - ResAssured
