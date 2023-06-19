@@ -164,7 +164,7 @@ public class WishlistService {
         logger.info("action=started_finding_all_products, userId={}, wishlistId={}", userId, wishlistId);
 
         final var wishlist = wishlistRepository.findByUserIdAndWishlistId(userId, wishlistId)
-                .orElseThrow(() -> NotFoundException.productNotFound(userId, wishlistId));
+                .orElseThrow(() -> NotFoundException.wishlistNotFound(userId, wishlistId));
 
         List<Long> productIds = wishlist.getProducts().stream().map(Product::getProductId).toList();
 
