@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: ${FINANCIAL_ALERT_DB_URI}
+      uri: ${MONGODB_URI}
       authentication-database: ${AUTHENTICATION_DATABASE}
       database: ${DATABASE}
   redis:

@@ -17,7 +17,7 @@ services:
     networks:
       - wishlist-api
     environment:
-      - FINANCIAL_ALERT_DB_URI=mongodb://mongodb/wishlist-api
+      - MONGODB_URI=mongodb://mongodb/wishlist-api
       - DATABASE=wishlist-api
       - REDIS_HOST=redis
       - REDIS_PORT=6379
