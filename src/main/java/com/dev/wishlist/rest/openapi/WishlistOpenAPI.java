@@ -42,7 +42,7 @@ public interface WishlistOpenAPI {
     })
     ResponseEntity<String> deleteWishlist(final String requestTraceId, final Long userId, final String wishlistId);
 
-    @Operation(summary = "Delete wishlist")
+    @Operation(summary = "Update wishlist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", description = "Wishlist not found with userId={userId}, wishlistId={wishlistId}", content = {
