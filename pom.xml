@@ -25,6 +25,7 @@
         <aggregate.report.dir>target/site/jacoco/jacoco.xml</aggregate.report.dir>
         <surefire.version>2.22.2</surefire.version>
         <springdoc.openapi.ui.verson>2.1.0</springdoc.openapi.ui.verson>
+        <aspect.version>3.1.2</aspect.version>
     </properties>
 
     <dependencies>
@@ -116,6 +117,13 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.openapi.ui.verson}</version>
+        </dependency>
+
+        <!-- ASPECTJ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>${aspect.version}</version>
         </dependency>
 
     </dependencies>

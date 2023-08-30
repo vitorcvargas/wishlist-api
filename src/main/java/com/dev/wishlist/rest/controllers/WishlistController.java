@@ -1,5 +1,6 @@
 package com.dev.wishlist.rest.controllers;
 
+import com.dev.wishlist.aspect.annotations.ControllerLogging;
 import com.dev.wishlist.models.Product;
 import com.dev.wishlist.rest.dtos.WishlistDTO;
 import com.dev.wishlist.rest.dtos.WishlistResponse;
@@ -30,6 +31,7 @@ public class WishlistController implements WishlistOpenAPI {
     }
 
     @PostMapping("/{userId}")
+    @ControllerLogging
     public ResponseEntity<WishlistResponse> createWishlist(@RequestHeader("x-request-trace-id") final String requestTraceId, @PathVariable final Long userId, @RequestBody final WishlistDTO wishlistDTO) {
         final var params = format("userId=%s, wishlistDTO=%s", userId, wishlistDTO);
         logger.info(REQUEST_RECEIVED, "createWishlist", POST, params);
